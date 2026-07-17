@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: urgis-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: urgis
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  api:
+    build: .
+    container_name: urgis-api
+    restart: always
+    command: uvicorn main:app --host 0.0.0.0 --port 8000
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/urgis
+      - YOLO_MODEL=data/yolov8s.pt
+      - YOLO_DEVICE=cpu
+      - FRAME_SKIP=2
+    depends_on:
+      - db
+    volumes:
+      - .:/app
+      - /app/venv # Avoid mounting host virtual environment
+
+volumes:
+  pgdata:

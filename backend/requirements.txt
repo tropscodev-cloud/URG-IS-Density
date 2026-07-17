@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+psycopg2-binary
+sqlalchemy
+pydantic
+pydantic-settings
+ultralytics
+opencv-python-headless
+numpy
+python-dotenv
+pyjwt
+passlib[bcrypt]
+loguru

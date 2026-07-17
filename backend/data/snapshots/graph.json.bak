@@ -1,0 +1,1366 @@
+{
+  "nodes": [
+    {
+      "id": "PERSON_00001",
+      "first_seen": 1782220339.7695518,
+      "last_seen": 1782220608.206285,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 361,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00002",
+      "first_seen": 1782220339.770176,
+      "last_seen": 1782220606.967492,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 288,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00003",
+      "first_seen": 1782220339.770401,
+      "last_seen": 1782220604.918643,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 114,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00004",
+      "first_seen": 1782220339.770588,
+      "last_seen": 1782220608.5966332,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 410,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00005",
+      "first_seen": 1782220339.770766,
+      "last_seen": 1782220606.446089,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 216,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00006",
+      "first_seen": 1782220339.770952,
+      "last_seen": 1782220608.595,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 413,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00007",
+      "first_seen": 1782220339.771157,
+      "last_seen": 1782220608.2411242,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 288,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00008",
+      "first_seen": 1782220339.771529,
+      "last_seen": 1782220605.009061,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 90,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00009",
+      "first_seen": 1782220339.771766,
+      "last_seen": 1782220606.1617439,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 195,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00010",
+      "first_seen": 1782220339.77198,
+      "last_seen": 1782220604.4065611,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 66,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00016",
+      "first_seen": 1782220340.64831,
+      "last_seen": 1782220607.108682,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 207,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00019",
+      "first_seen": 1782220340.959755,
+      "last_seen": 1782220608.6004531,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 293,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00020",
+      "first_seen": 1782220341.077006,
+      "last_seen": 1782220607.009024,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 132,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00025",
+      "first_seen": 1782220341.315113,
+      "last_seen": 1782220605.413287,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 18,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00023",
+      "first_seen": 1782220341.417881,
+      "last_seen": 1782220608.597748,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 126,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00029",
+      "first_seen": 1782220341.71705,
+      "last_seen": 1782220606.009326,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 27,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00035",
+      "first_seen": 1782220342.066211,
+      "last_seen": 1782220607.254024,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 9,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00038",
+      "first_seen": 1782220342.125979,
+      "last_seen": 1782220608.5060742,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 171,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00043",
+      "first_seen": 1782220342.314524,
+      "last_seen": 1782220608.0476842,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 93,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00044",
+      "first_seen": 1782220342.8660429,
+      "last_seen": 1782220607.0726159,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 30,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00032",
+      "first_seen": 1782220343.80928,
+      "last_seen": 1782220608.503982,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 34,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00051",
+      "first_seen": 1782220343.855715,
+      "last_seen": 1782220608.574718,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 24,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00059",
+      "first_seen": 1782220344.2501178,
+      "last_seen": 1782220608.601465,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 8,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00063",
+      "first_seen": 1782220344.46657,
+      "last_seen": 1782220614.2593868,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 138,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00065",
+      "first_seen": 1782220344.5319018,
+      "last_seen": 1782220608.598766,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 12,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00031",
+      "first_seen": 1782220347.7361019,
+      "last_seen": 1782220612.7957041,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 44,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00069",
+      "first_seen": 1782220347.773856,
+      "last_seen": 1782220616.0758002,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 254,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00070",
+      "first_seen": 1782220347.7744021,
+      "last_seen": 1782220615.011117,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 190,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00071",
+      "first_seen": 1782220347.774843,
+      "last_seen": 1782220613.199442,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 74,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00072",
+      "first_seen": 1782220347.775307,
+      "last_seen": 1782220616.546328,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 296,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00073",
+      "first_seen": 1782220347.775753,
+      "last_seen": 1782220614.511491,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 142,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00074",
+      "first_seen": 1782220347.776219,
+      "last_seen": 1782220616.545114,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 298,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00075",
+      "first_seen": 1782220347.776772,
+      "last_seen": 1782220616.109687,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 206,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00076",
+      "first_seen": 1782220347.777216,
+      "last_seen": 1782220613.240683,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 58,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00082",
+      "first_seen": 1782220348.498754,
+      "last_seen": 1782220615.1279411,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 138,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00068",
+      "first_seen": 1782220348.643976,
+      "last_seen": 1782220615.043591,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 92,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00084",
+      "first_seen": 1782220348.77794,
+      "last_seen": 1782220616.549452,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 216,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00089",
+      "first_seen": 1782220349.033269,
+      "last_seen": 1782220613.540095,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 12,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00087",
+      "first_seen": 1782220349.101213,
+      "last_seen": 1782220616.5473862,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 92,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00093",
+      "first_seen": 1782220349.35117,
+      "last_seen": 1782220614.072855,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 18,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00099",
+      "first_seen": 1782220349.680479,
+      "last_seen": 1782220615.2207959,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 6,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00102",
+      "first_seen": 1782220349.736446,
+      "last_seen": 1782220616.415921,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 128,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00107",
+      "first_seen": 1782220349.889633,
+      "last_seen": 1782220615.943182,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 68,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00108",
+      "first_seen": 1782220350.3713322,
+      "last_seen": 1782220615.102722,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 20,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00096",
+      "first_seen": 1782220351.281863,
+      "last_seen": 1782220616.413772,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 34,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00115",
+      "first_seen": 1782220351.34899,
+      "last_seen": 1782220616.5173812,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 24,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00123",
+      "first_seen": 1782220351.71601,
+      "last_seen": 1782220616.550465,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 8,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00127",
+      "first_seen": 1782220351.933614,
+      "last_seen": 1782220621.95123,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 138,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00129",
+      "first_seen": 1782220351.963319,
+      "last_seen": 1782220616.5484211,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 12,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00095",
+      "first_seen": 1782220355.191807,
+      "last_seen": 1782220620.382984,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 44,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00133",
+      "first_seen": 1782220355.22783,
+      "last_seen": 1782220623.913336,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 254,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00134",
+      "first_seen": 1782220355.228429,
+      "last_seen": 1782220622.7662451,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 190,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00135",
+      "first_seen": 1782220355.229267,
+      "last_seen": 1782220620.8078551,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 74,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00136",
+      "first_seen": 1782220355.230135,
+      "last_seen": 1782220624.278424,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 296,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00137",
+      "first_seen": 1782220355.230753,
+      "last_seen": 1782220622.253875,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 142,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00138",
+      "first_seen": 1782220355.231376,
+      "last_seen": 1782220624.27702,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 298,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00139",
+      "first_seen": 1782220355.23202,
+      "last_seen": 1782220623.9474292,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 206,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00140",
+      "first_seen": 1782220355.232647,
+      "last_seen": 1782220620.878586,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 58,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00146",
+      "first_seen": 1782220356.006679,
+      "last_seen": 1782220622.8731468,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 138,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00132",
+      "first_seen": 1782220356.187428,
+      "last_seen": 1782220622.795224,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 92,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00148",
+      "first_seen": 1782220356.3128068,
+      "last_seen": 1782220624.2817101,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 216,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00153",
+      "first_seen": 1782220356.644159,
+      "last_seen": 1782220621.232028,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 12,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00151",
+      "first_seen": 1782220356.757359,
+      "last_seen": 1782220624.279618,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 92,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00157",
+      "first_seen": 1782220357.127542,
+      "last_seen": 1782220621.804517,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 18,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00163",
+      "first_seen": 1782220357.467607,
+      "last_seen": 1782220622.9835148,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 6,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00166",
+      "first_seen": 1782220357.52896,
+      "last_seen": 1782220624.170763,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 128,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00171",
+      "first_seen": 1782220357.697632,
+      "last_seen": 1782220623.779032,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 68,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00172",
+      "first_seen": 1782220358.2182841,
+      "last_seen": 1782220622.8445408,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 20,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00160",
+      "first_seen": 1782220359.134356,
+      "last_seen": 1782220624.1676202,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 34,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00179",
+      "first_seen": 1782220359.189172,
+      "last_seen": 1782220624.252274,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 24,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00187",
+      "first_seen": 1782220359.5919008,
+      "last_seen": 1782220624.282711,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 8,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00191",
+      "first_seen": 1782220359.729732,
+      "last_seen": 1782220629.708141,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 138,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00193",
+      "first_seen": 1782220359.779094,
+      "last_seen": 1782220624.280685,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 12,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00159",
+      "first_seen": 1782220363.029571,
+      "last_seen": 1782220628.091891,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 44,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00197",
+      "first_seen": 1782220363.070324,
+      "last_seen": 1782220631.5585558,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 254,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00198",
+      "first_seen": 1782220363.071231,
+      "last_seen": 1782220630.470439,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 190,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00199",
+      "first_seen": 1782220363.0720918,
+      "last_seen": 1782220628.534343,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 74,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00200",
+      "first_seen": 1782220363.073092,
+      "last_seen": 1782220738.483108,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 297,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00201",
+      "first_seen": 1782220363.073966,
+      "last_seen": 1782220629.981119,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 142,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00202",
+      "first_seen": 1782220363.074901,
+      "last_seen": 1782220631.981571,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 298,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00203",
+      "first_seen": 1782220363.076473,
+      "last_seen": 1782220631.593249,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 206,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00204",
+      "first_seen": 1782220363.077303,
+      "last_seen": 1782220628.602134,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 58,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00210",
+      "first_seen": 1782220363.704323,
+      "last_seen": 1782220630.59676,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 138,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00196",
+      "first_seen": 1782220363.8648052,
+      "last_seen": 1782220630.505662,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 92,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00212",
+      "first_seen": 1782220363.9695308,
+      "last_seen": 1782220631.9858592,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 216,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00217",
+      "first_seen": 1782220364.2315588,
+      "last_seen": 1782220628.948902,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 12,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00215",
+      "first_seen": 1782220364.315425,
+      "last_seen": 1782220631.983794,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 92,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00221",
+      "first_seen": 1782220364.590736,
+      "last_seen": 1782220629.512766,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 18,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00227",
+      "first_seen": 1782220364.972236,
+      "last_seen": 1782220630.738326,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 6,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00230",
+      "first_seen": 1782220365.0250611,
+      "last_seen": 1782220631.892411,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 128,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00235",
+      "first_seen": 1782220365.175998,
+      "last_seen": 1782220631.4505222,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 68,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00236",
+      "first_seen": 1782220365.685981,
+      "last_seen": 1782220630.563505,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 20,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00224",
+      "first_seen": 1782220366.607999,
+      "last_seen": 1782220631.890173,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 34,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00243",
+      "first_seen": 1782220366.6857998,
+      "last_seen": 1782220631.9630442,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 24,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00251",
+      "first_seen": 1782220367.077727,
+      "last_seen": 1782220631.9869928,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 8,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00255",
+      "first_seen": 1782220367.315979,
+      "last_seen": 1782220637.5794492,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 138,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00257",
+      "first_seen": 1782220367.388066,
+      "last_seen": 1782220631.984801,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 12,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00223",
+      "first_seen": 1782220370.5946722,
+      "last_seen": 1782220635.845747,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 44,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00261",
+      "first_seen": 1782220370.633588,
+      "last_seen": 1782220639.696127,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 254,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00262",
+      "first_seen": 1782220370.6345978,
+      "last_seen": 1782220638.533748,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 190,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00263",
+      "first_seen": 1782220370.6355572,
+      "last_seen": 1782220636.293403,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 74,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00264",
+      "first_seen": 1782220370.636682,
+      "last_seen": 1782220640.1377542,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 296,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00265",
+      "first_seen": 1782220370.638465,
+      "last_seen": 1782220637.9085922,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 142,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00266",
+      "first_seen": 1782220370.639683,
+      "last_seen": 1782220640.136527,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 298,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00267",
+      "first_seen": 1782220370.6405811,
+      "last_seen": 1782220639.7090719,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 206,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00268",
+      "first_seen": 1782220370.641578,
+      "last_seen": 1782220636.368887,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 58,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00274",
+      "first_seen": 1782220371.277964,
+      "last_seen": 1782220638.698657,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 138,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00260",
+      "first_seen": 1782220371.4263198,
+      "last_seen": 1782220638.6219149,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 92,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00276",
+      "first_seen": 1782220371.575988,
+      "last_seen": 1782220640.1414778,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 216,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00281",
+      "first_seen": 1782220371.915016,
+      "last_seen": 1782220636.732903,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 12,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00279",
+      "first_seen": 1782220371.970043,
+      "last_seen": 1782220640.138772,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 92,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00285",
+      "first_seen": 1782220372.252362,
+      "last_seen": 1782220637.330473,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 18,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00291",
+      "first_seen": 1782220372.6194491,
+      "last_seen": 1782220638.813762,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 6,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00294",
+      "first_seen": 1782220372.668098,
+      "last_seen": 1782220640.00916,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 128,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00299",
+      "first_seen": 1782220372.79185,
+      "last_seen": 1782220639.559166,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 68,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00300",
+      "first_seen": 1782220373.322834,
+      "last_seen": 1782220638.6579971,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 20,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00288",
+      "first_seen": 1782220374.2339342,
+      "last_seen": 1782220640.007152,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 34,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00307",
+      "first_seen": 1782220374.279069,
+      "last_seen": 1782220640.117731,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 24,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00315",
+      "first_seen": 1782220374.670631,
+      "last_seen": 1782220640.1427991,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 8,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00319",
+      "first_seen": 1782220374.805453,
+      "last_seen": 1782220640.010418,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 59,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00321",
+      "first_seen": 1782220374.8544981,
+      "last_seen": 1782220640.140418,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 12,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00287",
+      "first_seen": 1782220378.072782,
+      "last_seen": 1782220378.890313,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 22,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00325",
+      "first_seen": 1782220378.1041422,
+      "last_seen": 1782220379.918622,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 47,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00326",
+      "first_seen": 1782220378.105629,
+      "last_seen": 1782220379.9064162,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 55,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00327",
+      "first_seen": 1782220378.106896,
+      "last_seen": 1782220379.347024,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 37,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00328",
+      "first_seen": 1782220378.108109,
+      "last_seen": 1782220379.908701,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 54,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00329",
+      "first_seen": 1782220378.109162,
+      "last_seen": 1782220379.917232,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 50,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00330",
+      "first_seen": 1782220378.1106591,
+      "last_seen": 1782220379.907663,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 55,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00331",
+      "first_seen": 1782220378.111706,
+      "last_seen": 1782220379.9159858,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 32,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00332",
+      "first_seen": 1782220378.112729,
+      "last_seen": 1782220379.4083571,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 29,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00338",
+      "first_seen": 1782220378.9641678,
+      "last_seen": 1782220379.910887,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 30,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00324",
+      "first_seen": 1782220379.137704,
+      "last_seen": 1782220379.911951,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 21,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00340",
+      "first_seen": 1782220379.245901,
+      "last_seen": 1782220379.9136572,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 22,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00345",
+      "first_seen": 1782220379.591414,
+      "last_seen": 1782220379.751503,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 6,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00343",
+      "first_seen": 1782220379.621761,
+      "last_seen": 1782220379.920207,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 3,
+      "degree": 0
+    },
+    {
+      "id": "PERSON_00349",
+      "first_seen": 1782220379.886849,
+      "last_seen": 1782220379.9149098,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 2,
+      "degree": 0
+    }
+  ],
+  "edges": [],
+  "communities": []
+}

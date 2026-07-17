@@ -1,0 +1,155 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root,
+:root[data-theme='dark'] {
+  --color-bg-canvas: 8 10 15;
+  --color-bg-surface: 15 18 26;
+  --color-bg-raised: 22 26 37;
+  --color-bg-overlay: 12 14 20;
+  --color-border: 39 44 58;
+  --color-border-strong: 61 68 87;
+  --color-fg-primary: 236 238 242;
+  --color-fg-secondary: 168 176 194;
+  --color-fg-muted: 108 116 134;
+  --color-accent: 56 189 248;
+  --color-accent-fg: 6 20 28;
+
+  --color-severity-info: 59 130 246;
+  --color-severity-warning: 245 158 11;
+  --color-severity-critical: 244 63 94;
+
+  --color-status-online: 34 197 94;
+  --color-status-degraded: 234 179 8;
+  --color-status-reconnecting: 168 85 247;
+  --color-status-offline: 113 113 122;
+  --color-status-misconfigured: 244 63 94;
+  --color-status-disabled: 82 82 91;
+
+  /* Stacked-card panel language (sidebar zones/alerts, right slide-over panel sections). */
+  --color-bg-card: 26 30 41;
+  --color-border-hairline: 255 255 255;
+  --color-scrim: 255 255 255;
+
+  color-scheme: dark;
+}
+
+:root[data-theme='light'] {
+  --color-bg-canvas: 244 246 249;
+  --color-bg-surface: 255 255 255;
+  --color-bg-raised: 255 255 255;
+  --color-bg-overlay: 255 255 255;
+  --color-border: 219 224 231;
+  --color-border-strong: 186 193 204;
+  --color-fg-primary: 17 22 31;
+  --color-fg-secondary: 71 82 99;
+  --color-fg-muted: 111 122 140;
+  --color-accent: 2 132 199;
+  --color-accent-fg: 255 255 255;
+
+  --color-severity-info: 37 99 235;
+  --color-severity-warning: 180 83 9;
+  --color-severity-critical: 190 18 60;
+
+  --color-status-online: 21 128 61;
+  --color-status-degraded: 161 98 7;
+  --color-status-reconnecting: 126 34 206;
+  --color-status-offline: 82 82 91;
+  --color-status-misconfigured: 190 18 60;
+  --color-status-disabled: 113 113 122;
+
+  /* Stacked-card panel language. bg-surface/bg-raised are both pure white in this theme, so
+     cards get their own barely-off-white tone to read as elevated at all; the hairline border
+     and hover/active scrim mix dark ink instead of white for the same reason. */
+  --color-bg-card: 248 249 251;
+  --color-border-hairline: 15 23 42;
+  --color-scrim: 15 23 42;
+
+  color-scheme: light;
+}
+
+:root {
+  /* Shared motion vocabulary for the stacked-card panel language — every interactive state
+     change (chevron rotation, expand/collapse, hover, live-number crossfades) uses one of these
+     so the whole app feels like one animated system rather than a patchwork of ad-hoc timings. */
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-fast: 120ms;
+  --motion-base: 150ms;
+  --motion-med: 200ms;
+  --motion-slow: 220ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-fast: 0ms;
+    --motion-base: 0ms;
+    --motion-med: 0ms;
+    --motion-slow: 0ms;
+  }
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  @apply bg-bg-canvas text-fg-primary antialiased;
+  margin: 0;
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-feature-settings: 'tnum' 1, 'cv11' 1;
+}
+
+* {
+  scrollbar-color: rgb(var(--color-border-strong)) transparent;
+  scrollbar-width: thin;
+}
+
+:focus-visible {
+  outline: 2px solid rgb(var(--color-accent));
+  outline-offset: 2px;
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Thin overlay scrollbar, visible only on hover — used inside stacked-card scroll regions. */
+.card-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+.card-scroll::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 2px;
+}
+.card-scroll:hover::-webkit-scrollbar-thumb {
+  background: rgb(var(--color-border-strong));
+}
+
+@keyframes value-crossfade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+/* Applied to a live-updating number's span, keyed by its value — re-mounting on change replays
+   this instead of the number just instantly snapping to the new figure ("ticking chaos"). */
+.value-crossfade {
+  animation: value-crossfade var(--motion-base) var(--ease-standard);
+}
+
+.sr-only-focusable:not(:focus) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

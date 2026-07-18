@@ -1,5 +1,7 @@
 import { CheckCircle2, Info, AlertTriangle, ShieldAlert, X } from 'lucide-react';
 import { useToastStore, type ToastSeverity } from '@/lib/state/toastStore';
+import { useSelectionStore } from '@/lib/state/selectionStore';
+import { useUiStore } from '@/lib/state/uiStore';
 import clsx from 'clsx';
 
 const ICONS: Record<ToastSeverity, typeof Info> = {
@@ -25,11 +27,21 @@ export function ToastHost(): React.JSX.Element {
   // the last line of defense against ever stacking more than a few toasts on screen at once.
   const toasts = allToasts.slice(-MAX_VISIBLE);
 
+  // `right-3` alone anchors to the true viewport edge — fine when the camera/group detail panel
+  // is closed, but that panel is a normal (non-fixed) flex sibling occupying its own width on the
+  // right, so a fixed-to-viewport toast host ends up rendering *inside* the panel's own
+  // horizontal region rather than clipping past it, visually colliding with panel content.
+  // Shifting the offset by the panel's current width keeps toasts in the map's open space instead.
+  const panelOpen = useSelectionStore((s) => s.kind !== 'none');
+  const panelWidth = useUiStore((s) => s.rightPanelWidth);
+  const rightOffset = panelOpen ? panelWidth + 12 : 12;
+
   return (
     <div
       aria-live="polite"
       aria-atomic="false"
-      className="pointer-events-none fixed right-3 top-16 z-[80] flex w-full max-w-sm flex-col gap-2"
+      style={{ right: rightOffset }}
+      className="pointer-events-none fixed top-16 z-[80] flex w-full max-w-sm flex-col gap-2 transition-[right] duration-200 ease-out"
     >
       {toasts.map((t) => {
         const Icon = ICONS[t.severity];

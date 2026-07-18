@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api/client';
 import { queryKeys } from '@/lib/api/queryClient';
+import { usePageVisible } from '@/lib/utils/usePageVisible';
 import type { Alert, Paginated, ThresholdConfig } from '@/types';
 
 function alertMatchesFilters(alert: Alert, filters: Record<string, string | undefined>): boolean {
@@ -20,7 +21,7 @@ function alertMatchesFilters(alert: Alert, filters: Record<string, string | unde
  * stale one, leaving an already-acked alert visibly "still open" for as long as several seconds.
  * A direct, synchronous patch from the authoritative response can't lose that race.
  */
-function patchAlertInCache(queryClient: QueryClient, updated: Alert): void {
+export function patchAlertInCache(queryClient: QueryClient, updated: Alert): void {
   // Iterate matching queries manually (rather than setQueriesData's single-arg updater) — each
   // alerts query's own filter object lives in its queryKey, and only "does this alert still
   // belong under *this specific* query's filters" tells us whether to update-in-place or remove.
@@ -54,10 +55,17 @@ function toQueryString(filters: Record<string, string | undefined>): string {
 }
 
 export function useAlerts(filters: AlertFilters = {}) {
+  // The 15s interval is a resilience fallback only — live updates come from WS events patching
+  // this same cache directly (see WsBridge.tsx), which keeps working regardless of `enabled`
+  // here. `enabled` just stops the redundant REST poll while the tab is in the background;
+  // `placeholderData` keeps the last-known page rendered (not blank) while re-fetching resumes.
+  const pageVisible = usePageVisible();
   return useQuery({
     queryKey: queryKeys.alerts(filters),
     queryFn: () => api.get<Paginated<Alert>>(`/alerts${toQueryString(filters)}`),
     refetchInterval: 15_000,
+    enabled: pageVisible,
+    placeholderData: (prev) => prev,
   });
 }
 

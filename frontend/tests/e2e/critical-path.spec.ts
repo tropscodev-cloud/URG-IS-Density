@@ -63,17 +63,61 @@ test.describe('Critical path: login → acknowledge a CRITICAL alert → generat
       )
       .toBeGreaterThan(0);
 
-    // Resolve a stable target camera name via the API up front, rather than grabbing ".first()"
-    // of whatever's on top of the tray in the UI — with the ambient simulation now realistically
+    // Resolve a stable target camera via the API up front, rather than grabbing ".first()" of
+    // whatever's on top of the tray in the UI — with the ambient simulation now realistically
     // raising and re-sorting alerts continuously (most-recent-first), a locator re-evaluated
     // between the note-fill and the Acknowledge click could resolve to a *different* card than the
     // one just filled in. Targeting one known camera name throughout stays correct regardless of
     // how many unrelated alerts arrive and reorder the list around it.
-    const targetAlertRes = await request.get(`${API_BASE}/alerts?severity=CRITICAL&status=OPEN&zoneId=zone-industrial`);
-    const targetAlertBody = await targetAlertRes.json();
-    const targetCameraId = targetAlertBody.items[0].cameraId as string;
-    const targetCameraRes = await request.get(`${API_BASE}/cameras/${targetCameraId}`);
-    const ackedCameraName = (await targetCameraRes.json()).name as string;
+    //
+    // Both done together, with re-verification and retries, because two independent races were
+    // reproduced live against a freshly-started server (not flakiness — the same failure both
+    // times, root-caused via the trace/page-snapshot each time):
+    //  1. Storm-grouping: the pre-clear above only accounts for what was open at that one instant
+    //     — the ~12s hysteresis wait plus the polling below is real wall-clock time the ambient
+    //     simulation keeps running in, and it can organically raise a few more zone-industrial
+    //     alerts in that window. Reproduced: 3 organic alerts (aged ~2min, not from this test's
+    //     own storm) plus this test's own 3 landed at *exactly* 6 — the storm-grouping threshold
+    //     (see features/alerts/dedup.ts) — so the zone oscillated between individual cards and a
+    //     collapsed StormCard for the entire two-minute test timeout, since a locator scoped to
+    //     one camera name can never match a StormCard.
+    //  2. Short-lived breach: density values are realistically noisy by design (see
+    //     server/src/sim/metrics.ts) — the specific alert picked as `items[0]` can drop back below
+    //     threshold and auto-resolve within a few seconds of being selected, before the UI phase
+    //     even gets there. Reproduced: target picked, cleared everything else, then the target
+    //     itself was gone by the time the UI checked for it, 15s later.
+    // Both are addressed by re-picking (and re-clearing) if the chosen target didn't survive to
+    // the point of actually driving the UI, rather than assuming a single snapshot stays valid.
+    let ackedCameraName = '';
+    for (let attempt = 0; attempt < 5; attempt++) {
+      const targetAlertRes = await request.get(`${API_BASE}/alerts?severity=CRITICAL&status=OPEN&zoneId=zone-industrial`);
+      const targetAlertBody = await targetAlertRes.json();
+      if (!targetAlertBody.items.length) {
+        await page.waitForTimeout(1000);
+        continue;
+      }
+      const targetAlertId = targetAlertBody.items[0].id as string;
+      const targetCameraId = targetAlertBody.items[0].cameraId as string;
+
+      // Clear every *other* open alert in the zone so it can't cross the storm-grouping threshold
+      // while we drive the UI, then re-check the target itself is still the one thing left open.
+      const finalCheck = await request.get(`${API_BASE}/alerts?status=OPEN&zoneId=zone-industrial`);
+      const finalCheckBody = await finalCheck.json();
+      for (const a of finalCheckBody.items as Array<{ id: string }>) {
+        if (a.id === targetAlertId) continue;
+        await request.post(`${API_BASE}/alerts/${a.id}/resolve`, { headers: { 'X-CDC-CSRF': supervisorCsrf } });
+      }
+      // No single-alert GET endpoint exists — re-use the list endpoint, scoped to this camera, to
+      // confirm the target itself is still open (not just that the *other* alerts got cleared).
+      const confirmRes = await request.get(`${API_BASE}/alerts?status=OPEN&cameraId=${targetCameraId}`);
+      const confirmBody = await confirmRes.json();
+      if (!confirmBody.items.some((a: { id: string }) => a.id === targetAlertId)) continue;
+
+      const targetCameraRes = await request.get(`${API_BASE}/cameras/${targetCameraId}`);
+      ackedCameraName = (await targetCameraRes.json()).name as string;
+      break;
+    }
+    expect(ackedCameraName, 'a stable target CRITICAL alert should have been found and isolated').not.toBe('');
 
     // Act: sign in through the real UI as an operator.
     await page.goto('/');

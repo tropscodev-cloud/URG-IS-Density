@@ -102,8 +102,11 @@ function KioskTile({ camera }: { camera: Camera }): React.JSX.Element {
   return (
     <div className="relative h-full w-full overflow-hidden rounded">
       <VideoPlayer camera={camera} metrics={effective.metrics} />
-      <div className="absolute left-1 top-1 flex items-center gap-1.5 rounded bg-black/60 px-1.5 py-0.5">
-        <span className="text-[10px] font-medium text-white">{camera.name}</span>
+      {/* No duplicate name label here — SyntheticFeedRenderer already burns the camera name into
+          the top-left corner of the feed itself (simulating a real CCTV on-screen display), and a
+          second DOM label in the same corner visually stacked with it, producing overlapping
+          text. The status dot is the only thing the canvas doesn't already show. */}
+      <div className="absolute left-1 top-1 rounded bg-black/60 p-1">
         <CameraStatusBadge status={effective.status} variant="dot" />
       </div>
     </div>

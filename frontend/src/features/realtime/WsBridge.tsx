@@ -7,7 +7,8 @@ import { useUiStore } from '@/lib/state/uiStore';
 import { toast, updateToast } from '@/lib/state/toastStore';
 import { playCriticalAlertCue } from '@/features/alerts/audio';
 import { queryKeys } from '@/lib/api/queryClient';
-import type { Camera, Paginated, Zone } from '@/types';
+import { patchAlertInCache } from '@/features/alerts/api';
+import type { Alert, Camera, Paginated, Zone } from '@/types';
 
 /** A burst of this many-or-more CRITICAL alerts within the window collapses into one summary
  *  toast instead of stacking individual ones — the mock's ambient simulation (and scripted
@@ -20,8 +21,6 @@ const SINGLE_TOAST_DISMISS_MS = 8_000;
 interface SummaryToastState {
   toastId: string;
   windowStart: number;
-  count: number;
-  zoneNames: Set<string>;
 }
 
 /**
@@ -79,7 +78,16 @@ export function WsBridge(): null {
     });
 
     const unsubAlerts = manager.subscribeAlerts((evt) => {
-      void queryClient.invalidateQueries({ queryKey: ['alerts'] });
+      // Patch the cache directly from the WS payload — which already carries the full, current
+      // Alert object — instead of invalidateQueries triggering a real REST refetch on every single
+      // WS 'alerts' message. With the ambient simulation raising/acking/resolving alerts
+      // continuously (by design), invalidateQueries here was firing a GET /alerts round-trip
+      // (x2 — once per distinct filter shape in use across the app) on *every* WS event, measured
+      // live at ~4-5 req/sec sustained, independent of and far more frequent than the 15s
+      // refetchInterval fallback below. This is the same direct-patch pattern the ack/resolve/
+      // escalate mutations already use (see patchAlertInCache) — synchronous, can't race, and
+      // needs no network round-trip since the WS push already has everything.
+      patchAlertInCache(queryClient, evt.alert);
       if (evt.event !== 'raised' || evt.alert.severity !== 'CRITICAL') return;
 
       // Dedup at the source: never toast the same alert.id twice. The engine itself only emits
@@ -98,39 +106,38 @@ export function WsBridge(): null {
       const now = Date.now();
       const summary = summaryRef.current;
 
-      // Already mid-burst: fold this alert into the existing summary toast instead of adding a
-      // new one, and extend the window so a sustained storm keeps collapsing rather than spawning
-      // a fresh summary every 10s.
-      if (summary && now - summary.windowStart < BURST_WINDOW_MS) {
-        summary.count += 1;
-        summary.zoneNames.add(zoneName);
-        summary.windowStart = now;
-        updateToast(summary.toastId, {
-          title: `${summary.count} CRITICAL alerts across ${summary.zoneNames.size} zone${summary.zoneNames.size === 1 ? '' : 's'}`,
-        });
-        return;
-      }
-
       // Not currently summarizing — check whether this alert is part of a fresh burst by counting
       // how many CRITICALs have fired in the last BURST_WINDOW_MS, this one included.
       recentCriticalTimestampsRef.current = recentCriticalTimestampsRef.current.filter((t) => now - t < BURST_WINDOW_MS);
       recentCriticalTimestampsRef.current.push(now);
+      const bursting = (summary && now - summary.windowStart < BURST_WINDOW_MS) || recentCriticalTimestampsRef.current.length >= BURST_THRESHOLD;
 
-      if (recentCriticalTimestampsRef.current.length >= BURST_THRESHOLD) {
-        const toastId = toast({
-          severity: 'critical',
-          title: `${recentCriticalTimestampsRef.current.length} CRITICAL alerts across 1 zone`,
-          message: 'Click to view the alert tray.',
-          actionLabel: 'View alert tray',
-          onAction: () => useUiStore.getState().setAlertTrayExpanded(true),
-          autoDismissMs: null,
-        });
-        summaryRef.current = {
-          toastId,
-          windowStart: now,
-          count: recentCriticalTimestampsRef.current.length,
-          zoneNames: new Set([zoneName]),
-        };
+      if (bursting) {
+        // Read the *current* open-CRITICAL count/zones straight from the (WS-kept-live) cache,
+        // never a running tally of raise-events seen — a tally only grows and never accounts for
+        // alerts already acked/resolved in the meantime, which is exactly what made this toast
+        // climb 17 -> 55 -> 419 -> 721 while the header badge (which does read live current state)
+        // correctly stayed around ~27. Same cache entry AlertTray/Sidebar/TopBar/etc. read, kept
+        // current by patchAlertInCache above on every WS event — no extra fetch needed here.
+        const openAlerts = queryClient.getQueryData<Paginated<Alert>>(queryKeys.alerts({ status: 'OPEN' }));
+        const openCritical = (openAlerts?.items ?? []).filter((a) => a.severity === 'CRITICAL');
+        const zoneIds = new Set(openCritical.map((a) => a.zoneId));
+        const title = `${openCritical.length} CRITICAL alerts across ${zoneIds.size} zone${zoneIds.size === 1 ? '' : 's'}`;
+
+        if (summary && now - summary.windowStart < BURST_WINDOW_MS) {
+          summary.windowStart = now;
+          updateToast(summary.toastId, { title });
+        } else {
+          const toastId = toast({
+            severity: 'critical',
+            title,
+            message: 'Click to view the alert tray.',
+            actionLabel: 'View alert tray',
+            onAction: () => useUiStore.getState().setAlertTrayExpanded(true),
+            autoDismissMs: null,
+          });
+          summaryRef.current = { toastId, windowStart: now };
+        }
         return;
       }
 

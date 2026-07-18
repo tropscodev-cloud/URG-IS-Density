@@ -29,7 +29,11 @@ const HISTORICAL_COPY = { label: 'Historical', icon: History, tone: 'text-accent
  */
 export function TopBar(): React.JSX.Element {
   const totals = useFleetTotals();
-  const { data: criticalAlerts } = useAlerts({ severity: 'CRITICAL', status: 'OPEN' });
+  // Same {status:'OPEN'} query AlertTray/Sidebar/KioskMode/MapCanvas already fetch — filtering to
+  // CRITICAL client-side (rather than a second `severity=CRITICAL&status=OPEN` query) means
+  // TanStack Query shares one cache entry/one network request across every consumer, instead of
+  // maintaining two distinct queries that both get invalidated/refetched independently.
+  const { data: openAlerts } = useAlerts({ status: 'OPEN' });
   const connectionState = useWsStore((s) => s.connectionState);
   const reconnectAttempt = useWsStore((s) => s.reconnectAttempt);
   const clockSkewMs = useWsStore((s) => s.clockSkewMs);
@@ -40,7 +44,7 @@ export function TopBar(): React.JSX.Element {
   const now = useClock();
   const conn = isHistorical ? HISTORICAL_COPY : (CONNECTION_COPY[connectionState] ?? CONNECTION_COPY.OFFLINE!);
   const ConnIcon = conn.icon;
-  const criticalCount = criticalAlerts?.items.length ?? 0;
+  const criticalCount = openAlerts?.items.filter((a) => a.severity === 'CRITICAL').length ?? 0;
 
   return (
     <div className="pointer-events-none absolute inset-x-0 top-0 z-40 flex justify-center p-2">

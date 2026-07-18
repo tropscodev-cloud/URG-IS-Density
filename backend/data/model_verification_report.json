@@ -1,0 +1,86 @@
+{
+    "benchmark_timestamp": "2026-07-18T05:31:01.270695Z",
+    "device": "cpu",
+    "yolo_model": "data/yolov8n.pt",
+    "confidence_threshold": 0.25,
+    "cameras": {
+        "CAM_001": {
+            "camera_name": "Entrance & Foyer",
+            "density_threshold": 15,
+            "processed_frames": 100,
+            "performance": {
+                "avg_inference_latency_ms": 32.68,
+                "avg_processing_fps": 28.68
+            },
+            "occupancy": {
+                "avg_headcount": 18.56,
+                "min_headcount": 14,
+                "max_headcount": 24,
+                "std_dev_headcount": 2.58
+            },
+            "accuracy": {
+                "avg_yolo_confidence": 0.5238,
+                "total_unique_track_ids": 52,
+                "tracker_drift_ratio": 2.8
+            },
+            "density": {
+                "avg_risk_pct": 87.88,
+                "normal_ratio": 0.0,
+                "warning_ratio": 0.02,
+                "critical_ratio": 0.98
+            }
+        },
+        "CAM_002": {
+            "camera_name": "Fresh Produce Aisle",
+            "density_threshold": 10,
+            "processed_frames": 100,
+            "performance": {
+                "avg_inference_latency_ms": 26.26,
+                "avg_processing_fps": 35.3
+            },
+            "occupancy": {
+                "avg_headcount": 13.51,
+                "min_headcount": 0,
+                "max_headcount": 17,
+                "std_dev_headcount": 1.87
+            },
+            "accuracy": {
+                "avg_yolo_confidence": 0.6235,
+                "total_unique_track_ids": 45,
+                "tracker_drift_ratio": 3.33
+            },
+            "density": {
+                "avg_risk_pct": 84.56,
+                "normal_ratio": 0.01,
+                "warning_ratio": 0.2,
+                "critical_ratio": 0.79
+            }
+        },
+        "CAM_003": {
+            "camera_name": "Bakery & Dairy Section",
+            "density_threshold": 12,
+            "processed_frames": 100,
+            "performance": {
+                "avg_inference_latency_ms": 26.73,
+                "avg_processing_fps": 34.67
+            },
+            "occupancy": {
+                "avg_headcount": 23.29,
+                "min_headcount": 5,
+                "max_headcount": 31,
+                "std_dev_headcount": 3.0
+            },
+            "accuracy": {
+                "avg_yolo_confidence": 0.6131,
+                "total_unique_track_ids": 64,
+                "tracker_drift_ratio": 2.75
+            },
+            "density": {
+                "avg_risk_pct": 83.63,
+                "normal_ratio": 0.01,
+                "warning_ratio": 0.09,
+                "critical_ratio": 0.9
+            }
+        }
+    }
+}

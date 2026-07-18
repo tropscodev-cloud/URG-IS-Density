@@ -1,36 +1,122 @@
 # api/routes/cameras.py
+import random
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from core.database import get_db
-from models.orm import Camera
-from models.domain import CameraResponse, CameraCreate
+from models.orm import Camera, Zone
+from models.domain import (
+    CameraResponse, CameraCreate, 
+    ZoneResponse, BuildingResponse,
+    PaginatedResponse
+)
 from typing import List
 
 router = APIRouter()
 
-@router.get("/cameras", response_model=List[CameraResponse])
+# --- Cameras ---
+@router.get("/cameras", response_model=PaginatedResponse)
 def get_cameras(db: Session = Depends(get_db)):
-    return db.query(Camera).all()
+    cameras = db.query(Camera).all()
+    # Serialize camera models manually or via Pydantic model
+    items = []
+    for c in cameras:
+        # Convert timestamp to ISO string manually if needed
+        items.append(CameraResponse.model_validate(c))
+        
+    return PaginatedResponse(items=items, next_cursor=None)
 
-@router.get("/camera/{id}", response_model=CameraResponse)
+@router.get("/cameras/{id}", response_model=CameraResponse)
 def get_camera(id: str, db: Session = Depends(get_db)):
     camera = db.query(Camera).filter(Camera.id == id).first()
     if not camera:
         raise HTTPException(status_code=404, detail="Camera not found")
-    return camera
+    return CameraResponse.model_validate(camera)
 
 @router.post("/cameras", response_model=CameraResponse)
 def create_camera(payload: CameraCreate, db: Session = Depends(get_db)):
     camera = db.query(Camera).filter(Camera.id == payload.id).first()
     if camera:
         raise HTTPException(status_code=400, detail="Camera ID already exists")
-    db_camera = Camera(**payload.model_dump())
+        
+    cam_id = payload.id or f"CAM_{random.randint(100, 999)}"
+    db_camera = Camera(
+        id=cam_id,
+        name=payload.name,
+        rtsp_url=payload.rtsp_url,
+        latitude=payload.lat,
+        longitude=payload.lng,
+        bearing=payload.bearing,
+        fov_angle=payload.fov_angle,
+        fov_radius=payload.range,
+        zone_id=payload.zone_id,
+        building_id=payload.building_id,
+        status="ONLINE",
+        is_active=True
+    )
     db.add(db_camera)
     db.commit()
     db.refresh(db_camera)
-    return db_camera
+    return CameraResponse.model_validate(db_camera)
 
-# Backward compatibility / singular routes
-@router.post("/camera", response_model=CameraResponse)
-def create_camera_singular(payload: CameraCreate, db: Session = Depends(get_db)):
-    return create_camera(payload, db)
+@router.patch("/cameras/{id}", response_model=CameraResponse)
+def patch_camera(id: str, payload: dict, db: Session = Depends(get_db)):
+    camera = db.query(Camera).filter(Camera.id == id).first()
+    if not camera:
+        raise HTTPException(status_code=404, detail="Camera not found")
+        
+    # Standard patch mapping
+    if "name" in payload: camera.name = payload["name"]
+    if "rtspUrl" in payload: camera.rtsp_url = payload["rtspUrl"]
+    if "lat" in payload: camera.latitude = payload["lat"]
+    if "lng" in payload: camera.longitude = payload["lng"]
+    if "bearing" in payload: camera.bearing = payload["bearing"]
+    if "fovAngle" in payload: camera.fov_angle = payload["fovAngle"]
+    if "range" in payload: camera.fov_radius = payload["range"]
+    if "zoneId" in payload: camera.zone_id = payload["zoneId"]
+    if "buildingId" in payload: camera.building_id = payload["buildingId"]
+    if "disabled" in payload: camera.is_active = not payload["disabled"]
+    
+    db.commit()
+    db.refresh(camera)
+    return CameraResponse.model_validate(camera)
+
+@router.post("/cameras/{id}/retire", response_model=CameraResponse)
+def retire_camera(id: str, payload: dict, db: Session = Depends(get_db)):
+    camera = db.query(Camera).filter(Camera.id == id).first()
+    if not camera:
+        raise HTTPException(status_code=404, detail="Camera not found")
+        
+    camera.retired = True
+    camera.retired_reason = payload.get("reason", "Retired by user request")
+    camera.status = "DISABLED"
+    camera.is_active = False
+    
+    db.commit()
+    db.refresh(camera)
+    return CameraResponse.model_validate(camera)
+
+@router.post("/cameras/{id}/test-connection")
+def test_connection(id: str, payload: dict):
+    # Simulated connection test
+    return {"ok": True, "snapshotUrl": "https://images.unsplash.com/photo-1541888946425-d81bb19240f5?q=80&w=640"}
+
+@router.post("/cameras/check-duplicate")
+def check_duplicate(payload: dict, db: Session = Depends(get_db)):
+    rtsp_url = payload.get("rtspUrl")
+    dup = db.query(Camera).filter(Camera.rtsp_url == rtsp_url).first()
+    if dup:
+        return {"duplicate": True, "cameraId": dup.id}
+    return {"duplicate": False}
+
+# --- Zones ---
+@router.get("/zones", response_model=PaginatedResponse)
+def get_zones(db: Session = Depends(get_db)):
+    zones = db.query(Zone).all()
+    items = [ZoneResponse.model_validate(z) for z in zones]
+    return PaginatedResponse(items=items, next_cursor=None)
+
+# --- Buildings ---
+@router.get("/buildings", response_model=PaginatedResponse)
+def get_buildings(db: Session = Depends(get_db)):
+    # Standard dummy or database buildings mapping
+    return PaginatedResponse(items=[], next_cursor=None)

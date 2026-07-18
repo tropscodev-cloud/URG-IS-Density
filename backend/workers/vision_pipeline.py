@@ -181,7 +181,8 @@ def run_pipeline(
                         entities.append({
                             "id": f"TRACK_{track_id}",
                             "coordinates": coord,
-                            "bbox": [x1, y1, w, h]
+                            "bbox": [x1, y1, w, h],
+                            "confidence": float(conf)
                         })
                         
                         # Track movement rate logic
@@ -223,9 +224,33 @@ def run_pipeline(
             moving_pct = round((moving_count / total_calc) * 100.0, 1) if total_calc > 0 else 0.0
             static_pct = round(100.0 - moving_pct, 1) if total_calc > 0 else 100.0
             
-            # Density risk calculation
-            # Risk is a combination of headcount vs threshold (0% to 100% risk rating)
-            risk_pct = round(min(100.0, (headcount / max(1, density_threshold)) * 100.0), 1)
+            # Advanced Proximity Clustering Calculation (DBSCAN-style density index)
+            clustered_count = 0
+            if headcount > 1:
+                centers = []
+                for ent in entities:
+                    bx = ent["bbox"]
+                    cx = bx[0] + bx[2] // 2
+                    cy = bx[1] + bx[3]
+                    centers.append((cx, cy))
+                
+                # Proximity distance threshold: 60 pixels (approx. 1.2 meters in scaled frame)
+                prox_threshold = 60.0
+                has_close_neighbor = [False] * headcount
+                for i in range(headcount):
+                    for j in range(i + 1, headcount):
+                        dist = math.sqrt((centers[i][0] - centers[j][0])**2 + (centers[i][1] - centers[j][1])**2)
+                        if dist < prox_threshold:
+                            has_close_neighbor[i] = True
+                            has_close_neighbor[j] = True
+                
+                clustered_count = sum(1 for x in has_close_neighbor if x)
+            
+            clustering_ratio = (clustered_count / headcount) if headcount > 0 else 0.0
+            volume_ratio = min(1.0, headcount / max(1, density_threshold))
+            
+            # Combined Density Risk: 40% spatial proximity clustering + 60% headcount capacity ratio
+            risk_pct = round((0.4 * clustering_ratio + 0.6 * volume_ratio) * 100.0, 1)
             
             seq += 1
             payload = {

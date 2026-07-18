@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark light" />
+    <meta name="referrer" content="no-referrer" />
+    <title>Crowd Density Console</title>
+    <script>
+      // Applies the persisted theme before first paint so a light-mode preference doesn't flash
+      // dark first — the non-sensitive UI-prefs store (cdc-ui-prefs) is read synchronously here;
+      // React's own sync in ThemeSync.tsx takes over for all changes after this point.
+      (function () {
+        try {
+          var raw = localStorage.getItem('cdc-ui-prefs');
+          var theme = raw ? JSON.parse(raw).state?.theme : null;
+          if (theme === 'light' || theme === 'dark') {
+            document.documentElement.dataset.theme = theme;
+          }
+        } catch (e) {
+          // Corrupted/blocked storage — fall back to the dark default already on <html>.
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

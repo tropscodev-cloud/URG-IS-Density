@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="700" viewBox="0 0 1000 700">
+  <rect width="1000" height="700" fill="#12151d"/>
+  <ellipse cx="500" cy="350" rx="440" ry="300" fill="none" stroke="#3d4457" stroke-width="3"/>
+  <ellipse cx="500" cy="350" rx="260" ry="150" fill="#1a1e2a" stroke="#27303a"/>
+  <g fill="#6c7486" font-family="system-ui, sans-serif" font-size="22">
+    <text x="60" y="60">Riverfront Stadium — Lower Concourse</text>
+    <text x="420" y="355">Field</text>
+  </g>
+</svg>

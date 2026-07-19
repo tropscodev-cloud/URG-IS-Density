@@ -3,6 +3,7 @@ import { persist } from 'zustand/middleware';
 
 export type BaseLayer = 'streets' | 'satellite';
 export type ThemeMode = 'dark' | 'light';
+export type SidebarSectionKey = 'filters' | 'cameras' | 'legend';
 
 interface UiState {
   theme: ThemeMode;
@@ -22,6 +23,12 @@ interface UiState {
   /** Lifted out of AlertTray's local state so other UI (e.g. a grouped "N CRITICAL alerts"
    *  toast's click action) can open the tray without prop-drilling or a DOM click simulation. */
   alertTrayExpanded: boolean;
+  /** Sidebar's top-level accordion (Search & Filters / Cameras / Legend) — distinct from
+   *  expandedZoneIds, which is the *camera list's own* nested per-zone accordion. */
+  sidebarSectionsOpen: Record<SidebarSectionKey, boolean>;
+  /** Last top-level tab visited (/, /map, /analytics) — landed on after login instead of always
+   *  forcing Home, so returning operators pick up where they left off. */
+  lastTab: string;
 
   setTheme: (t: ThemeMode) => void;
   toggleSidebar: () => void;
@@ -36,6 +43,8 @@ interface UiState {
   setKioskMode: (v: boolean) => void;
   toggleZoneExpanded: (zoneId: string) => void;
   setAlertTrayExpanded: (v: boolean) => void;
+  toggleSidebarSection: (key: SidebarSectionKey) => void;
+  setLastTab: (path: string) => void;
 }
 
 // Non-sensitive UI prefs only — no tokens, identities, or camera data ever live here.
@@ -55,6 +64,8 @@ export const useUiStore = create<UiState>()(
       kioskMode: false,
       expandedZoneIds: [],
       alertTrayExpanded: false,
+      sidebarSectionsOpen: { filters: false, cameras: true, legend: false },
+      lastTab: '/',
 
       setTheme: (theme) => set({ theme }),
       toggleSidebar: () => set((s) => ({ sidebarCollapsed: !s.sidebarCollapsed })),
@@ -74,6 +85,9 @@ export const useUiStore = create<UiState>()(
             : [...s.expandedZoneIds, zoneId],
         })),
       setAlertTrayExpanded: (alertTrayExpanded) => set({ alertTrayExpanded }),
+      toggleSidebarSection: (key) =>
+        set((s) => ({ sidebarSectionsOpen: { ...s.sidebarSectionsOpen, [key]: !s.sidebarSectionsOpen[key] } })),
+      setLastTab: (lastTab) => set({ lastTab }),
     }),
     { name: 'cdc-ui-prefs' },
   ),

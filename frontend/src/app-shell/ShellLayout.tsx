@@ -4,17 +4,12 @@ import { RightPanel } from './RightPanel';
 import { TopBar } from './TopBar';
 import { IconRail } from './IconRail';
 import { ErrorBoundary } from './ErrorBoundary';
-import { ToastHost } from './ToastHost';
 import { EventLogDrawer } from './EventLogDrawer';
-import { MapCanvas } from '@/features/map/MapCanvas';
+import { MapSplitView } from '@/features/map/MapSplitView';
 import { AddCameraModal } from '@/features/cameras/AddCameraModal';
 import { AlertTray } from '@/features/alerts/AlertTray';
 import { Timeline } from '@/features/timeline/Timeline';
 import { ChatWidget } from '@/features/chatbot/ChatWidget';
-import { IdleSessionManager } from '@/features/auth/IdleSessionManager';
-import { IdleWarningModal } from '@/features/auth/IdleWarningModal';
-import { StepUpModal } from '@/features/auth/StepUpModal';
-import { WsBridge } from '@/features/realtime/WsBridge';
 import { AuditQueueBanner } from '@/features/audit/AuditQueueBanner';
 import { AuditConsole } from '@/features/audit/AuditConsole';
 import { ReportsCenter } from '@/features/reports/ReportsCenter';
@@ -23,6 +18,9 @@ import { useUiStore } from '@/lib/state/uiStore';
 
 export type PanelKind = 'audit' | 'reports' | 'eventlog' | null;
 
+/** The /map tab's content. WsBridge/ToastHost/idle-session chrome now live in AppShell (the
+ *  app-root layout, mounted once for every tab) — this component owns only what's specific to
+ *  the operator console itself. */
 export function ShellLayout(): React.JSX.Element {
   const [addCameraOpen, setAddCameraOpen] = useState(false);
   // Audit/Reports/Event log are mutually exclusive right-docked slide-overs — one state, not
@@ -35,21 +33,14 @@ export function ShellLayout(): React.JSX.Element {
 
   if (kioskMode) {
     return (
-      <div className="relative h-screen w-screen overflow-hidden bg-bg-canvas">
-        <WsBridge />
-        <ErrorBoundary name="Kiosk mode" autoRecoverMs={5000}>
-          <KioskMode onExit={() => setKioskMode(false)} />
-        </ErrorBoundary>
-        <ToastHost />
-      </div>
+      <ErrorBoundary name="Kiosk mode" autoRecoverMs={5000}>
+        <KioskMode onExit={() => setKioskMode(false)} />
+      </ErrorBoundary>
     );
   }
 
   return (
-    <div className="relative flex h-screen w-screen overflow-hidden bg-bg-canvas">
-      <WsBridge />
-      <IdleSessionManager />
-
+    <div className="relative flex h-full w-full overflow-hidden bg-bg-canvas">
       <ErrorBoundary name="Icon rail" compact>
         <IconRail openPanel={openPanel} onOpenPanel={(panel) => setOpenPanel((cur) => (cur === panel ? null : panel))} />
       </ErrorBoundary>
@@ -60,7 +51,7 @@ export function ShellLayout(): React.JSX.Element {
 
       <div className="relative min-w-0 flex-1">
         <ErrorBoundary name="Map">
-          <MapCanvas />
+          <MapSplitView />
         </ErrorBoundary>
         <TopBar />
         <AuditQueueBanner />
@@ -81,9 +72,6 @@ export function ShellLayout(): React.JSX.Element {
       </ErrorBoundary>
       <EventLogDrawer open={openPanel === 'eventlog'} onClose={() => setOpenPanel(null)} />
 
-      <ToastHost />
-      <IdleWarningModal />
-      <StepUpModal />
       {addCameraOpen && <AddCameraModal onClose={() => setAddCameraOpen(false)} />}
     </div>
   );

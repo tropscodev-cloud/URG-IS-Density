@@ -20,6 +20,7 @@ export default defineConfig({
           'vendor-react': ['react', 'react-dom', 'react-router-dom'],
           'vendor-query': ['@tanstack/react-query'],
           'vendor-maplibre': ['maplibre-gl', 'react-map-gl'],
+          'vendor-recharts': ['recharts'],
           'vendor-deckgl': [
             '@deck.gl/core',
             '@deck.gl/layers',
@@ -36,12 +37,16 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'http://localhost:4000',
+        target: 'http://localhost:8000',
         changeOrigin: true,
       },
       '/ws': {
-        target: 'ws://localhost:4000',
+        target: 'ws://localhost:8000',
         ws: true,
+      },
+      '/data': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
       },
     },
   },

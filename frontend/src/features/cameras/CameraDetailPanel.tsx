@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { useSelectionStore } from '@/lib/state/selectionStore';
-import { useCamera } from './api';
+import { useCamera, useSetCameraFps } from './api';
 import { useEffectiveCamera } from './useEffectiveCamera';
 import { CameraStatusBadge } from './CameraStatusBadge';
 import { FloorPlanView } from './FloorPlanView';
 import { EditCameraModal } from './EditCameraModal';
 import { RetireCameraModal } from './RetireCameraModal';
+import { FpsSegmentedToggle, DEFAULT_TARGET_FPS, type FpsOption } from './FpsSegmentedToggle';
 import { VideoPlayer } from '@/features/video/VideoPlayer';
 import { CameraSparkline } from '@/features/metrics/CameraSparkline';
 import { CameraAlertHistory } from '@/features/alerts/CameraAlertHistory';
@@ -13,7 +14,7 @@ import { EvidenceBundleButton } from '@/features/reports/EvidenceBundleButton';
 import { RoleGate } from '@/features/auth/RoleGate';
 import { ErrorBoundary } from '@/app-shell/ErrorBoundary';
 import { relativeAge, formatLocalWithZone } from '@/lib/utils/time';
-import { MapPin, Layers, Clock, Activity, Pencil, Trash2 } from 'lucide-react';
+import { MapPin, Layers, Clock, Activity, Gauge, Pencil, Trash2 } from 'lucide-react';
 
 export function CameraDetailPanel(): React.JSX.Element {
   const cameraId = useSelectionStore((s) => s.cameraId);
@@ -23,6 +24,7 @@ export function CameraDetailPanel(): React.JSX.Element {
   const [floorPlanOpen, setFloorPlanOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [retireOpen, setRetireOpen] = useState(false);
+  const setFps = useSetCameraFps();
 
   if (isLoading) return <div className="p-4 text-xs text-fg-muted">Loading camera…</div>;
   if (isError || !camera) return <div className="p-4 text-xs text-severity-critical">Camera not found.</div>;
@@ -84,6 +86,25 @@ export function CameraDetailPanel(): React.JSX.Element {
           <EvidenceBundleButton cameraId={camera.id} at={metrics?.ts ?? new Date().toISOString()} />
         </div>
       </div>
+
+      <RoleGate permission="tuneCameraFps">
+        <div className="flex items-center justify-between gap-2 border-b border-border p-4">
+          <div className="flex min-w-0 items-center gap-1.5">
+            <Gauge className="h-3.5 w-3.5 shrink-0 text-fg-muted" aria-hidden="true" />
+            <div className="min-w-0">
+              <div className="text-xs font-medium text-fg-primary">Inference rate</div>
+              <div className="truncate text-[10px] text-fg-muted">
+                {metrics?.effectiveFps !== undefined ? `Effective: ${metrics.effectiveFps} fps` : 'Effective rate unknown'}
+              </div>
+            </div>
+          </div>
+          <FpsSegmentedToggle
+            value={camera.targetFps ?? DEFAULT_TARGET_FPS}
+            disabled={setFps.isPending}
+            onChange={(fps: FpsOption) => setFps.mutate({ id: camera.id, targetFps: fps })}
+          />
+        </div>
+      </RoleGate>
 
       <div className="space-y-2 border-b border-border p-4">
         <ErrorBoundary name="History charts" compact>

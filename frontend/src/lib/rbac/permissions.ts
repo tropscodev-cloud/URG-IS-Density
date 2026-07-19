@@ -17,6 +17,7 @@ export const PERMISSIONS = {
   exportEvidenceBundle: 'OPERATOR',
   manageCameras: 'SUPERVISOR',
   tuneThresholds: 'SUPERVISOR',
+  tuneCameraFps: 'ADMIN',
   kioskMode: 'SUPERVISOR',
   scheduleReports: 'SUPERVISOR',
   userManagementView: 'ADMIN',

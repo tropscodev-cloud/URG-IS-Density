@@ -14,7 +14,7 @@ export function ProtectedRoute({ children, permission }: Props): React.JSX.Eleme
   const locked = useSessionStore((s) => s.locked);
 
   if (!user) return <Navigate to="/login" replace />;
-  if (permission && !hasPermission(user.role, permission)) return <Navigate to="/app" replace />;
+  if (permission && !hasPermission(user.role, permission)) return <Navigate to="/" replace />;
 
   return (
     <>

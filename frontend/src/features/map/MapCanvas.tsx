@@ -11,7 +11,6 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 
 import { DeckOverlay } from './DeckOverlay';
 import { useClusteredCameras, type OutputFeature, type Viewport } from './useClusteredCameras';
-import { HeatmapLegend } from './HeatmapLegend';
 import { PerfOverlay, isPerfOverlayEnabled } from './PerfOverlay';
 import { fovConePolygon } from './geo';
 import { SEVERITY_COLOR, STATUS_COLOR, HEATMAP_COLOR_RANGE, type RGBA } from './colors';
@@ -279,15 +278,19 @@ export function MapCanvas(): React.JSX.Element {
         f.isCluster ? SEVERITY_COLOR[f.severity as 0 | 1 | 2] : (STATUS_COLOR[f.status ?? 'ONLINE'] ?? STATUS_COLOR.ONLINE!),
     });
 
+    // Every camera coordinate gets its live headcount, not just cluster aggregates — clusters show
+    // their combined total (still correct, just a bigger number at the centroid); individual,
+    // unclustered points now get one too, where previously only clusters were labeled at all.
     const labelLayer = new TextLayer<OutputFeature>({
-      id: 'cluster-labels',
-      data: features.filter((f) => f.isCluster),
+      id: 'headcount-labels',
+      data: features,
       getPosition: (f) => [f.lng, f.lat],
       getText: (f) => String(f.headcount),
       getSize: 11,
       getColor: [8, 10, 15, 255],
       fontFamily: 'ui-monospace, monospace',
       fontWeight: 700,
+      updateTriggers: { getText: [features] },
     });
 
     return [heatmapLayer, fovLayer, markerLayer, labelLayer];
@@ -383,7 +386,6 @@ export function MapCanvas(): React.JSX.Element {
             </button>
           </div>
 
-          {heatmapEnabled && <HeatmapLegend />}
           {isPerfOverlayEnabled() && <PerfOverlay />}
 
           {mapError && (

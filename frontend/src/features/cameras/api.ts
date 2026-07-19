@@ -85,6 +85,58 @@ export function usePatchCamera() {
   });
 }
 
+/** Single-camera inference-rate change — optimistic, rolled back on error (see camera detail
+ *  panel's segmented fps control). */
+export function useSetCameraFps() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, targetFps }: { id: string; targetFps: number }) =>
+      api.patch<Camera>(`/cameras/${id}`, { targetFps }),
+    onMutate: async ({ id, targetFps }) => {
+      await queryClient.cancelQueries({ queryKey: ['cameras'] });
+      await queryClient.cancelQueries({ queryKey: queryKeys.camera(id) });
+      const prevLists = queryClient.getQueriesData<Paginated<Camera>>({ queryKey: ['cameras'], exact: false });
+      const prevSingle = queryClient.getQueryData<Camera>(queryKeys.camera(id));
+      queryClient.setQueriesData<Paginated<Camera>>({ queryKey: ['cameras'], exact: false }, (old) =>
+        old ? { ...old, items: old.items.map((c) => (c.id === id ? { ...c, targetFps } : c)) } : old,
+      );
+      queryClient.setQueryData<Camera>(queryKeys.camera(id), (old) => (old ? { ...old, targetFps } : old));
+      return { prevLists, prevSingle, id };
+    },
+    onError: (_err, _vars, ctx) => {
+      if (!ctx) return;
+      for (const [key, data] of ctx.prevLists) queryClient.setQueryData(key, data);
+      queryClient.setQueryData(queryKeys.camera(ctx.id), ctx.prevSingle);
+    },
+    onSettled: () => void queryClient.invalidateQueries({ queryKey: ['cameras'] }),
+  });
+}
+
+/** Bulk inference-rate change across an explicit id list or every camera ("all") — see the
+ *  sidebar Cameras-section settings popover. */
+export function useBulkSetCameraFps() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ cameraIds, targetFps }: { cameraIds: string[] | 'all'; targetFps: number }) =>
+      api.patch<Paginated<Camera>>('/cameras', { cameraIds, targetFps }),
+    onMutate: async ({ cameraIds, targetFps }) => {
+      await queryClient.cancelQueries({ queryKey: ['cameras'] });
+      const prevLists = queryClient.getQueriesData<Paginated<Camera>>({ queryKey: ['cameras'], exact: false });
+      queryClient.setQueriesData<Paginated<Camera>>({ queryKey: ['cameras'], exact: false }, (old) =>
+        old
+          ? { ...old, items: old.items.map((c) => (cameraIds === 'all' || cameraIds.includes(c.id) ? { ...c, targetFps } : c)) }
+          : old,
+      );
+      return { prevLists };
+    },
+    onError: (_err, _vars, ctx) => {
+      if (!ctx) return;
+      for (const [key, data] of ctx.prevLists) queryClient.setQueryData(key, data);
+    },
+    onSettled: () => void queryClient.invalidateQueries({ queryKey: ['cameras'] }),
+  });
+}
+
 export function useRetireCamera() {
   const queryClient = useQueryClient();
   return useMutation({

@@ -7,11 +7,14 @@ import { useCameras, useZones } from '@/features/cameras/api';
 import { useAlerts } from '@/features/alerts/api';
 import { CameraListRow } from '@/features/cameras/CameraListRow';
 import { BulkImportModal } from '@/features/cameras/BulkImportModal';
+import { CameraFpsScopePopover } from '@/features/cameras/CameraFpsScopePopover';
 import { useUiStore } from '@/lib/state/uiStore';
 import { RoleGate } from '@/features/auth/RoleGate';
 import { ErrorBoundary } from './ErrorBoundary';
+import { AccordionSection } from './AccordionSection';
 import { getWsManager } from '@/lib/ws/WebSocketManager';
 import { useHeatmapTick } from '@/lib/ws/hooks';
+import { HEATMAP_THRESHOLDS } from '@/features/map/colors';
 import type { Camera, CameraStatus } from '@/types';
 
 // Card header row is 52px (spec) + 8px top margin between stacked zone cards; camera rows are
@@ -44,6 +47,8 @@ export function Sidebar({ onAddCamera }: SidebarProps): React.JSX.Element {
   const toggleSidebar = useUiStore((s) => s.toggleSidebar);
   const width = useUiStore((s) => s.sidebarWidth);
   const setWidth = useUiStore((s) => s.setSidebarWidth);
+  const sectionsOpen = useUiStore((s) => s.sidebarSectionsOpen);
+  const toggleSection = useUiStore((s) => s.toggleSidebarSection);
 
   const { data: camerasData, isLoading, isError, refetch } = useCameras();
   const { data: zonesData } = useZones();
@@ -84,6 +89,7 @@ export function Sidebar({ onAddCamera }: SidebarProps): React.JSX.Element {
   }, [zonesData]);
 
   const hasActiveFilter = !!search.trim() || statusFilter !== 'ALL' || zoneFilter !== 'ALL' || alertingOnly;
+  const openAlertCount = openAlerts?.items.length ?? 0;
 
   // Auto-expand is a one-time, *persisted* state change (added to expandedZoneIds), not a live
   // "expanded while severity === critical" condition — with the ambient simulation realistically
@@ -162,8 +168,9 @@ export function Sidebar({ onAddCamera }: SidebarProps): React.JSX.Element {
       }
     }
     return out;
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- heatmapTick is a deliberate ≤1Hz
-    // refresh trigger for liveHeadcount, not a value read directly in the body.
+    // heatmapTick is a deliberate ≤1Hz refresh trigger for liveHeadcount, not a value read
+    // directly in the body.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     camerasData,
     search,
@@ -272,64 +279,94 @@ export function Sidebar({ onAddCamera }: SidebarProps): React.JSX.Element {
         </div>
       </div>
 
-      <div className="border-b border-border p-2">
-        <div className="relative mb-2">
-          <Search className="pointer-events-none absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-fg-muted" aria-hidden="true" />
-          <input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search cameras or tags…"
-            aria-label="Search cameras"
-            className="w-full rounded-md border border-border bg-bg-raised py-1.5 pl-7 pr-7 text-xs text-fg-primary outline-none focus-visible:border-accent"
-          />
-          {search && (
-            <button
-              type="button"
-              onClick={() => setSearch('')}
-              aria-label="Clear search"
-              className="absolute right-1.5 top-1/2 -translate-y-1/2 text-fg-muted hover:text-fg-primary"
-            >
-              <X className="h-3.5 w-3.5" aria-hidden="true" />
-            </button>
-          )}
-        </div>
-        <div className="flex flex-wrap gap-1.5">
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value as CameraStatus | 'ALL')}
-            aria-label="Filter by status"
-            className="rounded-md border border-border bg-bg-raised px-1.5 py-1 text-[11px] text-fg-secondary"
-          >
-            <option value="ALL">All statuses</option>
-            <option value="ONLINE">Online</option>
-            <option value="DEGRADED">Degraded</option>
-            <option value="RECONNECTING">Reconnecting</option>
-            <option value="OFFLINE">Offline</option>
-            <option value="MISCONFIGURED">Misconfigured</option>
-            <option value="DISABLED">Disabled</option>
-          </select>
-          <select
-            value={zoneFilter}
-            onChange={(e) => setZoneFilter(e.target.value)}
-            aria-label="Filter by zone"
-            className="rounded-md border border-border bg-bg-raised px-1.5 py-1 text-[11px] text-fg-secondary"
-          >
-            <option value="ALL">All zones</option>
-            {(zonesData?.items ?? []).map((z) => (
-              <option key={z.id} value={z.id}>
-                {z.name}
-              </option>
-            ))}
-          </select>
-          <label className="flex items-center gap-1 rounded-md border border-border bg-bg-raised px-1.5 py-1 text-[11px] text-fg-secondary">
-            <input type="checkbox" checked={alertingOnly} onChange={(e) => setAlertingOnly(e.target.checked)} />
-            Alerting only
-          </label>
-        </div>
-      </div>
+      <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto p-3">
+        <AccordionSection
+          title="Search & Filters"
+          expanded={sectionsOpen.filters}
+          onToggle={() => toggleSection('filters')}
+          badge={
+            hasActiveFilter ? (
+              <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-accent" aria-hidden="true" />
+            ) : undefined
+          }
+        >
+          <div className="p-3 pt-0">
+            <div className="relative mb-2">
+              <Search className="pointer-events-none absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-fg-muted" aria-hidden="true" />
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search cameras or tags…"
+                aria-label="Search cameras"
+                className="w-full rounded-md border border-border bg-bg-raised py-1.5 pl-7 pr-7 text-xs text-fg-primary outline-none focus-visible:border-accent"
+              />
+              {search && (
+                <button
+                  type="button"
+                  onClick={() => setSearch('')}
+                  aria-label="Clear search"
+                  className="absolute right-1.5 top-1/2 -translate-y-1/2 text-fg-muted hover:text-fg-primary"
+                >
+                  <X className="h-3.5 w-3.5" aria-hidden="true" />
+                </button>
+              )}
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value as CameraStatus | 'ALL')}
+                aria-label="Filter by status"
+                className="rounded-md border border-border bg-bg-raised px-1.5 py-1 text-[11px] text-fg-secondary"
+              >
+                <option value="ALL">All statuses</option>
+                <option value="ONLINE">Online</option>
+                <option value="DEGRADED">Degraded</option>
+                <option value="RECONNECTING">Reconnecting</option>
+                <option value="OFFLINE">Offline</option>
+                <option value="MISCONFIGURED">Misconfigured</option>
+                <option value="DISABLED">Disabled</option>
+              </select>
+              <select
+                value={zoneFilter}
+                onChange={(e) => setZoneFilter(e.target.value)}
+                aria-label="Filter by zone"
+                className="rounded-md border border-border bg-bg-raised px-1.5 py-1 text-[11px] text-fg-secondary"
+              >
+                <option value="ALL">All zones</option>
+                {(zonesData?.items ?? []).map((z) => (
+                  <option key={z.id} value={z.id}>
+                    {z.name}
+                  </option>
+                ))}
+              </select>
+              <label className="flex items-center gap-1 rounded-md border border-border bg-bg-raised px-1.5 py-1 text-[11px] text-fg-secondary">
+                <input type="checkbox" checked={alertingOnly} onChange={(e) => setAlertingOnly(e.target.checked)} />
+                Alerting only
+              </label>
+            </div>
+          </div>
+        </AccordionSection>
 
-      <div className="min-h-0 flex-1">
-        <ErrorBoundary name="Camera list" compact>
+        <AccordionSection
+          title="Cameras"
+          expanded={sectionsOpen.cameras}
+          onToggle={() => toggleSection('cameras')}
+          grow
+          badge={
+            openAlertCount > 0 ? (
+              <span className="rounded-full bg-severity-critical px-1.5 py-0.5 text-[10px] font-bold leading-none text-white">
+                {openAlertCount}
+              </span>
+            ) : undefined
+          }
+          headerExtra={
+            <RoleGate permission="tuneCameraFps">
+              <CameraFpsScopePopover />
+            </RoleGate>
+          }
+        >
+        <div className="min-h-0 flex-1">
+          <ErrorBoundary name="Camera list" compact>
           {isLoading && <p className="p-3 text-xs text-fg-muted">Loading cameras…</p>}
           {isError && (
             <div className="p-3 text-xs text-severity-critical">
@@ -413,7 +450,24 @@ export function Sidebar({ onAddCamera }: SidebarProps): React.JSX.Element {
               )}
             </AutoSizer>
           )}
-        </ErrorBoundary>
+          </ErrorBoundary>
+        </div>
+        </AccordionSection>
+
+        <AccordionSection title="Legend" expanded={sectionsOpen.legend} onToggle={() => toggleSection('legend')}>
+          <div className="flex flex-col gap-1.5 p-3 pt-0">
+            {HEATMAP_THRESHOLDS.map((t) => (
+              <div key={t.label} className="flex items-center gap-2 text-xs text-fg-secondary">
+                <span
+                  className="h-2.5 w-2.5 shrink-0 rounded-full"
+                  style={{ backgroundColor: t.color }}
+                  aria-hidden="true"
+                />
+                {t.label}
+              </div>
+            ))}
+          </div>
+        </AccordionSection>
       </div>
 
       <div

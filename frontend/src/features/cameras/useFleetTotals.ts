@@ -23,7 +23,7 @@ export function useFleetTotals(): FleetTotals {
   // WebSocketManager's 'fleet_snapshot' handling), which deliberately doesn't touch the
   // dirty/anyListeners machinery useAnyMetricsTick relies on — so this total would have gone
   // stale, refreshing only on the 30s REST poll instead of near-real-time.
-  useHeatmapTick();
+  const heatmapTick = useHeatmapTick();
   const manager = getWsManager();
   const isHistorical = useTimeStore((s) => s.isHistorical);
   const viewingAtMs = useTimeStore((s) => s.viewingAtMs);
@@ -53,5 +53,11 @@ export function useFleetTotals(): FleetTotals {
       }
     }
     return { totalHeadcount, activeCount, totalCount: items.length, excludedCount };
-  }, [data, manager, isHistorical, historical]);
+    // heatmapTick is intentionally in this array with no other reference: it's the ≤1Hz pulse that
+    // makes this recompute from manager.getLatest() at all. Without it, this memo only re-runs when
+    // `data`/`historical` change reference, which can go long stretches without happening — the
+    // aggregate then freezes at whatever it computed on the first render forever after (this was
+    // the TopBar headcount=0 bug).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data, manager, isHistorical, historical, heatmapTick]);
 }

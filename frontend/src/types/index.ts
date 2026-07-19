@@ -37,6 +37,16 @@ export interface Zone {
   parentZoneId: string | null;
 }
 
+/** One live person detection from the backend's YOLO+BoTSORT pipeline — present only when
+ *  connected to the real inference backend (the mock server never sends this). bbox is
+ *  [x, y, width, height] in the pipeline's 640x480 processing-frame pixel space. */
+export interface DetectedEntity {
+  id: string;
+  coordinates: { x: number; y: number };
+  bbox: [number, number, number, number];
+  confidence: number;
+}
+
 export interface CameraMetrics {
   cameraId: string;
   seq: number;
@@ -46,6 +56,14 @@ export interface CameraMetrics {
   movementPct: number;
   densityRisk: number;
   inferenceLatencyMs: number;
+  entities?: DetectedEntity[];
+  /** Position (seconds) within the source video file these detections came from — only present
+   *  against the real inference backend. Lets a client seek its own playback to match instead of
+   *  free-running independently of when these boxes were actually observed. */
+  sourceVideoTimeS?: number;
+  /** What the worker is actually sampling at right now (post fps-clamp, post frame-skip rounding)
+   *  — may briefly lag a just-requested targetFps until the worker's next raw-frame poll. */
+  effectiveFps?: number;
 }
 
 export interface Camera {
@@ -74,6 +92,9 @@ export interface Camera {
   retiredBy: string | null;
   lastConfigChange: { by: string; at: string } | null;
   uptimePct30d: number;
+  /** Configured inference sampling rate (1-30fps) — only meaningful against the real inference
+   *  backend; defaults to 20 there, absent/ignored on the mock server. */
+  targetFps?: number;
   createdAt: string;
   updatedAt: string;
 }

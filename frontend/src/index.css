@@ -78,6 +78,7 @@
   --motion-base: 150ms;
   --motion-med: 200ms;
   --motion-slow: 220ms;
+  --motion-collapse: 180ms;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -86,6 +87,7 @@
     --motion-base: 0ms;
     --motion-med: 0ms;
     --motion-slow: 0ms;
+    --motion-collapse: 0ms;
   }
 }
 
@@ -140,6 +142,25 @@ body {
    this instead of the number just instantly snapping to the new figure ("ticking chaos"). */
 .value-crossfade {
   animation: value-crossfade var(--motion-base) var(--ease-standard);
+}
+
+/* Smooth "auto height" collapse without JS measurement or display:none mid-animation — a single
+   grid row sized in `fr` units takes its natural content height when expanded (`1fr`) and
+   collapses to genuinely zero (`0fr`) when not, with the inner wrapper's `overflow: hidden`
+   clipping content during the transition. The content itself never unmounts either way, so
+   scroll position/component state inside it (e.g. a virtualized list) survives collapsing a
+   *different* sibling section. */
+.accordion-grid {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--motion-collapse) var(--ease-standard);
+}
+.accordion-grid.is-expanded {
+  grid-template-rows: 1fr;
+}
+.accordion-grid > div {
+  overflow: hidden;
+  min-height: 0;
 }
 
 .sr-only-focusable:not(:focus) {

@@ -1,10 +1,11 @@
 import { memo } from 'react';
-import { Layers, Users } from 'lucide-react';
+import { Layers, Users, Gauge } from 'lucide-react';
 import clsx from 'clsx';
 import type { Camera } from '@/types';
 import { CameraStatusBadge } from './CameraStatusBadge';
 import { useEffectiveCamera } from './useEffectiveCamera';
-import { useSelectionStore } from '@/lib/state/selectionStore';
+import { useSelectionStore, MAX_GROUP_SELECTION } from '@/lib/state/selectionStore';
+import { DEFAULT_TARGET_FPS } from './FpsSegmentedToggle';
 
 interface Props {
   camera: Camera;
@@ -19,22 +20,38 @@ export const CameraListRow = memo(function CameraListRow({ camera, hasOpenAlert,
   const effective = useEffectiveCamera(camera);
   const selected = useSelectionStore((s) => s.cameraId === camera.id);
   const selectCamera = useSelectionStore((s) => s.selectCamera);
+  const groupSelected = useSelectionStore((s) => s.groupCameraIds.includes(camera.id));
+  const groupCount = useSelectionStore((s) => s.groupCameraIds.length);
+  const toggleGroupCamera = useSelectionStore((s) => s.toggleGroupCamera);
 
   return (
     <div
       style={style}
       className={clsx(
-        'mx-3 border-x border-hairline/[0.07] bg-bg-card px-1.5',
+        'mx-3 flex items-center gap-1 border-x border-hairline/[0.07] bg-bg-card px-1.5',
         isLastInZone && 'rounded-b-[14px] border-b',
       )}
     >
+      <input
+        type="checkbox"
+        checked={groupSelected}
+        onChange={() => toggleGroupCamera(camera.id)}
+        disabled={!groupSelected && groupCount >= MAX_GROUP_SELECTION}
+        aria-label={`${groupSelected ? 'Remove' : 'Add'} ${camera.name} ${groupSelected ? 'from' : 'to'} the split-screen video grid (max ${MAX_GROUP_SELECTION})`}
+        title={
+          !groupSelected && groupCount >= MAX_GROUP_SELECTION
+            ? `Video grid is full (max ${MAX_GROUP_SELECTION})`
+            : 'Add to split-screen video grid'
+        }
+        className="h-3.5 w-3.5 shrink-0 accent-accent disabled:cursor-not-allowed disabled:opacity-40"
+      />
       <button
         type="button"
         onClick={() => selectCamera(camera.id)}
         aria-pressed={selected}
         aria-label={`${camera.name}, ${effective.status.toLowerCase()}${hasOpenAlert ? ', has active alert' : ''}`}
         className={clsx(
-          'flex h-11 w-full items-center gap-2 rounded-[10px] px-2.5 text-left transition-colors duration-[var(--motion-fast)] ease-[var(--ease-standard)]',
+          'flex h-11 min-w-0 flex-1 items-center gap-2 rounded-[10px] px-2.5 text-left transition-colors duration-[var(--motion-fast)] ease-[var(--ease-standard)]',
           selected ? 'bg-scrim/[0.08]' : 'hover:bg-scrim/[0.04]',
         )}
       >
@@ -58,6 +75,15 @@ export const CameraListRow = memo(function CameraListRow({ camera, hasOpenAlert,
         <div className="flex shrink-0 items-center gap-2">
           {hasOpenAlert && !effective.isHistorical && (
             <span className="h-1.5 w-1.5 animate-pulse-ring rounded-full bg-severity-critical" aria-hidden="true" />
+          )}
+          {camera.targetFps !== undefined && camera.targetFps < DEFAULT_TARGET_FPS && (
+            <span
+              className="flex shrink-0 items-center gap-0.5 rounded border border-border px-1 text-[9px] text-fg-muted"
+              title={`Inference rate reduced to ${camera.targetFps} fps`}
+            >
+              <Gauge className="h-2.5 w-2.5" aria-hidden="true" />
+              {camera.targetFps} fps
+            </span>
           )}
           {(effective.status === 'ONLINE' || effective.status === 'DEGRADED') && effective.metrics && (
             <span

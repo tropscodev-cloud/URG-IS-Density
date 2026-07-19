@@ -1,0 +1,26 @@
+node_modules/
+dist/
+dist-ssr/
+coverage/
+playwright-report/
+test-results/
+*.local
+.DS_Store
+*.tsbuildinfo
+.env
+.env.*.local
+npm-debug.log*
+
+# secrets
+*.env
+!.env.example
+
+# python caches
+__pycache__/
+*.pyc
+
+# large binaries / model weights / data
+*.mp4
+*.pt
+*.index
+backend/data/

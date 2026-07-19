@@ -1,0 +1,1463 @@
+{
+  "nodes": [
+    {
+      "id": "PERSON_00020",
+      "first_seen": 1784217435.421611,
+      "last_seen": 1784217435.923687,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 3,
+      "degree": 0,
+      "location": [
+        301,
+        265
+      ]
+    },
+    {
+      "id": "PERSON_00021",
+      "first_seen": 1784217435.4218051,
+      "last_seen": 1784217435.924793,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 4,
+      "degree": 0,
+      "location": [
+        356,
+        131
+      ]
+    },
+    {
+      "id": "PERSON_00023",
+      "first_seen": 1784217435.422061,
+      "last_seen": 1784217435.422063,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 1,
+      "degree": 0,
+      "location": [
+        395,
+        91
+      ]
+    },
+    {
+      "id": "PERSON_00024",
+      "first_seen": 1784217435.422303,
+      "last_seen": 1784217435.75408,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 3,
+      "degree": 0,
+      "location": [
+        501,
+        107
+      ]
+    },
+    {
+      "id": "PERSON_00016",
+      "first_seen": 1784217435.4225018,
+      "last_seen": 1784217435.925367,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 4,
+      "degree": 0,
+      "location": [
+        596,
+        374
+      ]
+    },
+    {
+      "id": "PERSON_00025",
+      "first_seen": 1784217435.422723,
+      "last_seen": 1784217435.4227252,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 1,
+      "degree": 0,
+      "location": [
+        424,
+        93
+      ]
+    },
+    {
+      "id": "13",
+      "first_seen": 1784217435.439261,
+      "last_seen": 1784224269.904882,
+      "camera_ids": [
+        "cam3",
+        "cam1",
+        "cam2"
+      ],
+      "total_interactions": 190012,
+      "degree": 5,
+      "location": [
+        67,
+        128
+      ]
+    },
+    {
+      "id": "14",
+      "first_seen": 1784217435.4395719,
+      "last_seen": 1784224269.9888818,
+      "camera_ids": [
+        "cam3",
+        "cam1",
+        "cam2"
+      ],
+      "total_interactions": 73155,
+      "degree": 8,
+      "location": [
+        245,
+        235
+      ]
+    },
+    {
+      "id": "PERSON_00002",
+      "first_seen": 1784217435.542707,
+      "last_seen": 1784217435.757437,
+      "camera_ids": [
+        "cam3"
+      ],
+      "total_interactions": 2,
+      "degree": 0,
+      "location": [
+        172,
+        237
+      ]
+    },
+    {
+      "id": "PERSON_00003",
+      "first_seen": 1784217435.5430038,
+      "last_seen": 1784217435.543006,
+      "camera_ids": [
+        "cam3"
+      ],
+      "total_interactions": 1,
+      "degree": 0,
+      "location": [
+        539,
+        339
+      ]
+    },
+    {
+      "id": "PERSON_00004",
+      "first_seen": 1784217435.5433578,
+      "last_seen": 1784217435.758464,
+      "camera_ids": [
+        "cam3"
+      ],
+      "total_interactions": 2,
+      "degree": 0,
+      "location": [
+        318,
+        137
+      ]
+    },
+    {
+      "id": "PERSON_00008",
+      "first_seen": 1784217435.5436711,
+      "last_seen": 1784217435.7588842,
+      "camera_ids": [
+        "cam3"
+      ],
+      "total_interactions": 2,
+      "degree": 0,
+      "location": [
+        446,
+        102
+      ]
+    },
+    {
+      "id": "PERSON_00009",
+      "first_seen": 1784217435.543951,
+      "last_seen": 1784217435.7593129,
+      "camera_ids": [
+        "cam3"
+      ],
+      "total_interactions": 2,
+      "degree": 0,
+      "location": [
+        152,
+        114
+      ]
+    },
+    {
+      "id": "PERSON_00011",
+      "first_seen": 1784217435.5441952,
+      "last_seen": 1784217435.759719,
+      "camera_ids": [
+        "cam3"
+      ],
+      "total_interactions": 2,
+      "degree": 0,
+      "location": [
+        264,
+        351
+      ]
+    },
+    {
+      "id": "PERSON_00013",
+      "first_seen": 1784217435.5444732,
+      "last_seen": 1784217435.760135,
+      "camera_ids": [
+        "cam3"
+      ],
+      "total_interactions": 2,
+      "degree": 0,
+      "location": [
+        354,
+        137
+      ]
+    },
+    {
+      "id": "PERSON_00006",
+      "first_seen": 1784217435.544767,
+      "last_seen": 1784217435.7605371,
+      "camera_ids": [
+        "cam3"
+      ],
+      "total_interactions": 2,
+      "degree": 0,
+      "location": [
+        473,
+        363
+      ]
+    },
+    {
+      "id": "PERSON_00005",
+      "first_seen": 1784217435.545154,
+      "last_seen": 1784217435.760947,
+      "camera_ids": [
+        "cam3"
+      ],
+      "total_interactions": 2,
+      "degree": 0,
+      "location": [
+        129,
+        114
+      ]
+    },
+    {
+      "id": "PERSON_00046",
+      "first_seen": 1784217435.545585,
+      "last_seen": 1784217435.761355,
+      "camera_ids": [
+        "cam3"
+      ],
+      "total_interactions": 2,
+      "degree": 0,
+      "location": [
+        29,
+        227
+      ]
+    },
+    {
+      "id": "PERSON_00048",
+      "first_seen": 1784217435.5459871,
+      "last_seen": 1784217435.761766,
+      "camera_ids": [
+        "cam3"
+      ],
+      "total_interactions": 2,
+      "degree": 0,
+      "location": [
+        41,
+        135
+      ]
+    },
+    {
+      "id": "PERSON_00029",
+      "first_seen": 1784217435.580245,
+      "last_seen": 1784217436.063432,
+      "camera_ids": [
+        "cam2"
+      ],
+      "total_interactions": 3,
+      "degree": 0,
+      "location": [
+        349,
+        79
+      ]
+    },
+    {
+      "id": "PERSON_00030",
+      "first_seen": 1784217435.580738,
+      "last_seen": 1784217436.063903,
+      "camera_ids": [
+        "cam2"
+      ],
+      "total_interactions": 3,
+      "degree": 0,
+      "location": [
+        569,
+        59
+      ]
+    },
+    {
+      "id": "PERSON_00031",
+      "first_seen": 1784217435.5812721,
+      "last_seen": 1784217436.0643358,
+      "camera_ids": [
+        "cam2"
+      ],
+      "total_interactions": 3,
+      "degree": 0,
+      "location": [
+        207,
+        74
+      ]
+    },
+    {
+      "id": "PERSON_00032",
+      "first_seen": 1784217435.581729,
+      "last_seen": 1784217436.064764,
+      "camera_ids": [
+        "cam2"
+      ],
+      "total_interactions": 3,
+      "degree": 0,
+      "location": [
+        383,
+        79
+      ]
+    },
+    {
+      "id": "PERSON_00033",
+      "first_seen": 1784217435.582152,
+      "last_seen": 1784217436.0651891,
+      "camera_ids": [
+        "cam2"
+      ],
+      "total_interactions": 3,
+      "degree": 0,
+      "location": [
+        256,
+        70
+      ]
+    },
+    {
+      "id": "PERSON_00034",
+      "first_seen": 1784217435.582575,
+      "last_seen": 1784217435.8108811,
+      "camera_ids": [
+        "cam2"
+      ],
+      "total_interactions": 2,
+      "degree": 0,
+      "location": [
+        527,
+        51
+      ]
+    },
+    {
+      "id": "PERSON_00037",
+      "first_seen": 1784217435.583877,
+      "last_seen": 1784217436.066553,
+      "camera_ids": [
+        "cam2"
+      ],
+      "total_interactions": 3,
+      "degree": 0,
+      "location": [
+        164,
+        90
+      ]
+    },
+    {
+      "id": "PERSON_00044",
+      "first_seen": 1784217435.584435,
+      "last_seen": 1784217436.0670059,
+      "camera_ids": [
+        "cam2"
+      ],
+      "total_interactions": 3,
+      "degree": 0,
+      "location": [
+        498,
+        142
+      ]
+    },
+    {
+      "id": "PERSON_00050",
+      "first_seen": 1784217435.584949,
+      "last_seen": 1784217436.067459,
+      "camera_ids": [
+        "cam2"
+      ],
+      "total_interactions": 3,
+      "degree": 0,
+      "location": [
+        309,
+        81
+      ]
+    },
+    {
+      "id": "PERSON_00038",
+      "first_seen": 1784217435.585502,
+      "last_seen": 1784217435.585505,
+      "camera_ids": [
+        "cam2"
+      ],
+      "total_interactions": 1,
+      "degree": 0,
+      "location": [
+        511,
+        109
+      ]
+    },
+    {
+      "id": "PERSON_00039",
+      "first_seen": 1784217435.585995,
+      "last_seen": 1784217435.585997,
+      "camera_ids": [
+        "cam2"
+      ],
+      "total_interactions": 1,
+      "degree": 0,
+      "location": [
+        231,
+        67
+      ]
+    },
+    {
+      "id": "PERSON_00018",
+      "first_seen": 1784217435.62683,
+      "last_seen": 1784217435.922731,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 3,
+      "degree": 0,
+      "location": [
+        23,
+        148
+      ]
+    },
+    {
+      "id": "PERSON_00019",
+      "first_seen": 1784217435.627244,
+      "last_seen": 1784217435.923226,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 3,
+      "degree": 0,
+      "location": [
+        580,
+        221
+      ]
+    },
+    {
+      "id": "PERSON_00052",
+      "first_seen": 1784217435.754863,
+      "last_seen": 1784217435.926551,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 2,
+      "degree": 0,
+      "location": [
+        590,
+        284
+      ]
+    },
+    {
+      "id": "PERSON_00001",
+      "first_seen": 1784217435.756892,
+      "last_seen": 1784217435.756896,
+      "camera_ids": [
+        "cam3"
+      ],
+      "total_interactions": 1,
+      "degree": 0,
+      "location": [
+        408,
+        264
+      ]
+    },
+    {
+      "id": "PERSON_00041",
+      "first_seen": 1784217435.76218,
+      "last_seen": 1784217435.762183,
+      "camera_ids": [
+        "cam3"
+      ],
+      "total_interactions": 1,
+      "degree": 0,
+      "location": [
+        509,
+        190
+      ]
+    },
+    {
+      "id": "PERSON_00036",
+      "first_seen": 1784217435.8114262,
+      "last_seen": 1784217436.0661209,
+      "camera_ids": [
+        "cam2"
+      ],
+      "total_interactions": 2,
+      "degree": 0,
+      "location": [
+        421,
+        92
+      ]
+    },
+    {
+      "id": "15",
+      "first_seen": 1784217539.327611,
+      "last_seen": 1784224269.808198,
+      "camera_ids": [
+        "cam3",
+        "cam1",
+        "cam2"
+      ],
+      "total_interactions": 76216,
+      "degree": 7,
+      "location": [
+        460,
+        98
+      ]
+    },
+    {
+      "id": "16",
+      "first_seen": 1784217540.146014,
+      "last_seen": 1784224265.986271,
+      "camera_ids": [
+        "cam3",
+        "cam1",
+        "cam2"
+      ],
+      "total_interactions": 14992,
+      "degree": 5,
+      "location": [
+        164,
+        90
+      ]
+    },
+    {
+      "id": "17",
+      "first_seen": 1784217580.831617,
+      "last_seen": 1784224269.744343,
+      "camera_ids": [
+        "cam3",
+        "cam1",
+        "cam2"
+      ],
+      "total_interactions": 9263,
+      "degree": 5,
+      "location": [
+        615,
+        341
+      ]
+    },
+    {
+      "id": "18",
+      "first_seen": 1784217581.1874292,
+      "last_seen": 1784224270.015384,
+      "camera_ids": [
+        "cam3",
+        "cam1",
+        "cam2"
+      ],
+      "total_interactions": 8047,
+      "degree": 6,
+      "location": [
+        333,
+        358
+      ]
+    },
+    {
+      "id": "19",
+      "first_seen": 1784217586.1063948,
+      "last_seen": 1784223845.5497909,
+      "camera_ids": [
+        "cam3",
+        "cam1",
+        "cam2"
+      ],
+      "total_interactions": 1350,
+      "degree": 4,
+      "location": [
+        160,
+        132
+      ]
+    },
+    {
+      "id": "20",
+      "first_seen": 1784217586.2055418,
+      "last_seen": 1784217953.195738,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 180,
+      "degree": 1,
+      "location": [
+        160,
+        132
+      ]
+    },
+    {
+      "id": "21",
+      "first_seen": 1784217595.6417139,
+      "last_seen": 1784217663.202961,
+      "camera_ids": [
+        "cam3",
+        "cam1",
+        "cam2"
+      ],
+      "total_interactions": 242,
+      "degree": 3,
+      "location": [
+        521,
+        126
+      ]
+    },
+    {
+      "id": "22",
+      "first_seen": 1784217600.3064132,
+      "last_seen": 1784217644.0286431,
+      "camera_ids": [
+        "cam1"
+      ],
+      "total_interactions": 9,
+      "degree": 0,
+      "location": [
+        160,
+        132
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "person_id_a": "13",
+      "person_id_b": "14",
+      "confidence": 1.0,
+      "relationship": "significant",
+      "color": "#971c1c",
+      "incident_counts": {
+        "PROXIMITY": 629,
+        "CLOSE_CONTACT": 49,
+        "EXTENDED_MEETING": 4,
+        "CONVERSATION": 58,
+        "GROUP_GATHERING": 1
+      },
+      "last_incident": "CLOSE_CONTACT",
+      "meetings_today": 741,
+      "total_meetings": 741,
+      "avg_duration_s": 6.4,
+      "total_duration_s": 4741.7,
+      "cameras": [
+        "cam3",
+        "cam1",
+        "cam2"
+      ],
+      "locations": [],
+      "location_events": [],
+      "first_seen": 1784217687.849174,
+      "last_seen": 1784224262.522722
+    },
+    {
+      "person_id_a": "13",
+      "person_id_b": "15",
+      "confidence": 1.0,
+      "relationship": "significant",
+      "color": "#971c1c",
+      "incident_counts": {
+        "PROXIMITY": 1108,
+        "CONVERSATION": 2,
+        "CLOSE_CONTACT": 107,
+        "GROUP_GATHERING": 2,
+        "EXTENDED_MEETING": 2
+      },
+      "last_incident": "PROXIMITY",
+      "meetings_today": 1221,
+      "total_meetings": 1221,
+      "avg_duration_s": 3.2,
+      "total_duration_s": 3958.7,
+      "cameras": [
+        "cam3",
+        "cam1",
+        "cam2"
+      ],
+      "locations": [],
+      "location_events": [],
+      "first_seen": 1784217701.819842,
+      "last_seen": 1784224254.822432
+    },
+    {
+      "person_id_a": "13",
+      "person_id_b": "17",
+      "confidence": 0.7705,
+      "relationship": "close_associate",
+      "color": "#d88100",
+      "incident_counts": {
+        "PROXIMITY": 273,
+        "GROUP_GATHERING": 2,
+        "EXTENDED_MEETING": 1
+      },
+      "last_incident": "EXTENDED_MEETING",
+      "meetings_today": 276,
+      "total_meetings": 276,
+      "avg_duration_s": 3.9,
+      "total_duration_s": 1084.7,
+      "cameras": [
+        "cam3",
+        "cam1",
+        "cam2"
+      ],
+      "locations": [],
+      "location_events": [],
+      "first_seen": 1784217727.214483,
+      "last_seen": 1784224251.851925
+    },
+    {
+      "person_id_a": "13",
+      "person_id_b": "16",
+      "confidence": 0.7549,
+      "relationship": "close_associate",
+      "color": "#ec8d00",
+      "incident_counts": {
+        "PROXIMITY": 415,
+        "EXTENDED_MEETING": 1
+      },
+      "last_incident": "EXTENDED_MEETING",
+      "meetings_today": 416,
+      "total_meetings": 416,
+      "avg_duration_s": 3.4,
+      "total_duration_s": 1401.5,
+      "cameras": [
+        "cam2"
+      ],
+      "locations": [],
+      "location_events": [],
+      "first_seen": 1784218118.9244711,
+      "last_seen": 1784224252.329566
+    },
+    {
+      "person_id_a": "13",
+      "person_id_b": "18",
+      "confidence": 0.5559,
+      "relationship": "associate",
+      "color": "#48a34c",
+      "incident_counts": {
+        "PROXIMITY": 256
+      },
+      "last_incident": "PROXIMITY",
+      "meetings_today": 256,
+      "total_meetings": 256,
+      "avg_duration_s": 2.4,
+      "total_duration_s": 610.7,
+      "cameras": [
+        "cam1"
+      ],
+      "locations": [],
+      "location_events": [],
+      "first_seen": 1784218302.1656692,
+      "last_seen": 1784224269.832118
+    },
+    {
+      "person_id_a": "14",
+      "person_id_b": "15",
+      "confidence": 1.0,
+      "relationship": "significant",
+      "color": "#971c1c",
+      "incident_counts": {
+        "PROXIMITY": 319,
+        "CLOSE_CONTACT": 162,
+        "EXTENDED_MEETING": 2,
+        "CONVERSATION": 10,
+        "GROUP_GATHERING": 1
+      },
+      "last_incident": "PROXIMITY",
+      "meetings_today": 494,
+      "total_meetings": 494,
+      "avg_duration_s": 4.6,
+      "total_duration_s": 2256.4,
+      "cameras": [
+        "cam3",
+        "cam1",
+        "cam2"
+      ],
+      "locations": [],
+      "location_events": [],
+      "first_seen": 1784217576.781146,
+      "last_seen": 1784224262.5230231
+    },
+    {
+      "person_id_a": "14",
+      "person_id_b": "16",
+      "confidence": 0.7027,
+      "relationship": "close_associate",
+      "color": "#ffab30",
+      "incident_counts": {
+        "PROXIMITY": 49,
+        "CONVERSATION": 1
+      },
+      "last_incident": "PROXIMITY",
+      "meetings_today": 50,
+      "total_meetings": 50,
+      "avg_duration_s": 3.0,
+      "total_duration_s": 147.6,
+      "cameras": [
+        "cam3",
+        "cam2"
+      ],
+      "locations": [],
+      "location_events": [],
+      "first_seen": 1784217577.405647,
+      "last_seen": 1784223599.778144
+    },
+    {
+      "person_id_a": "14",
+      "person_id_b": "18",
+      "confidence": 0.5112,
+      "relationship": "associate",
+      "color": "#68bc6b",
+      "incident_counts": {
+        "PROXIMITY": 24,
+        "CLOSE_CONTACT": 1
+      },
+      "last_incident": "PROXIMITY",
+      "meetings_today": 25,
+      "total_meetings": 25,
+      "avg_duration_s": 2.1,
+      "total_duration_s": 52.9,
+      "cameras": [
+        "cam3",
+        "cam1",
+        "cam2"
+      ],
+      "locations": [],
+      "location_events": [],
+      "first_seen": 1784217583.874292,
+      "last_seen": 1784217659.69193
+    },
+    {
+      "person_id_a": "14",
+      "person_id_b": "17",
+      "confidence": 0.6134,
+      "relationship": "close_associate",
+      "color": "#ffd9a1",
+      "incident_counts": {
+        "PROXIMITY": 108
+      },
+      "last_incident": "PROXIMITY",
+      "meetings_today": 108,
+      "total_meetings": 108,
+      "avg_duration_s": 2.6,
+      "total_duration_s": 276.3,
+      "cameras": [
+        "cam3",
+        "cam1"
+      ],
+      "locations": [],
+      "location_events": [],
+      "first_seen": 1784217584.78876,
+      "last_seen": 1784223851.2831511
+    },
+    {
+      "person_id_a": "14",
+      "person_id_b": "20",
+      "confidence": 0.1558,
+      "relationship": "stranger",
+      "color": "#868686",
+      "incident_counts": {
+        "PROXIMITY": 8
+      },
+      "last_incident": "PROXIMITY",
+      "meetings_today": 8,
+      "total_meetings": 8,
+      "avg_duration_s": 2.1,
+      "total_duration_s": 17.0,
+      "cameras": [
+        "cam1"
+      ],
+      "locations": [],
+      "location_events": [],
+      "first_seen": 1784217593.029092,
+      "last_seen": 1784217953.195735
+    },
+    {
+      "person_id_a": "14",
+      "person_id_b": "21",
+      "confidence": 0.1066,
+      "relationship": "stranger",
+      "color": "#9c9c9c",
+      "incident_counts": {
+        "PROXIMITY": 5
+      },
+      "last_incident": "PROXIMITY",
+      "meetings_today": 5,
+      "total_meetings": 5,
+      "avg_duration_s": 2.1,
+      "total_duration_s": 10.6,
+      "cameras": [
+        "cam3"
+      ],
+      "locations": [],
+      "location_events": [],
+      "first_seen": 1784217597.8303292,
+      "last_seen": 1784217661.107285
+    },
+    {
+      "person_id_a": "14",
+      "person_id_b": "19",
+      "confidence": 0.2229,
+      "relationship": "acquaintance",
+      "color": "#9addfa",
+      "incident_counts": {
+        "PROXIMITY": 17
+      },
+      "last_incident": "PROXIMITY",
+      "meetings_today": 17,
+      "total_meetings": 17,
+      "avg_duration_s": 2.5,
+      "total_duration_s": 43.0,
+      "cameras": [
+        "cam3"
+      ],
+      "locations": [],
+      "location_events": [],
+      "first_seen": 1784217787.893725,
+      "last_seen": 1784218007.360151
+    },
+    {
+      "person_id_a": "15",
+      "person_id_b": "18",
+      "confidence": 0.6007,
+      "relationship": "close_associate",
+      "color": "#ffe0b2",
+      "incident_counts": {
+        "PROXIMITY": 7,
+        "CLOSE_CONTACT": 3
+      },
+      "last_incident": "CLOSE_CONTACT",
+      "meetings_today": 10,
+      "total_meetings": 10,
+      "avg_duration_s": 2.1,
+      "total_duration_s": 21.0,
+      "cameras": [
+        "cam3"
+      ],
+      "locations": [],
+      "location_events": [],
+      "first_seen": 1784217583.874122,
+      "last_seen": 1784217658.640727
+    },
+    {
+      "person_id_a": "15",
+      "person_id_b": "21",
+      "confidence": 0.1006,
+      "relationship": "stranger",
+      "color": "#9f9f9f",
+      "incident_counts": {
+        "PROXIMITY": 4
+      },
+      "last_incident": "PROXIMITY",
+      "meetings_today": 4,
+      "total_meetings": 4,
+      "avg_duration_s": 2.1,
+      "total_duration_s": 8.6,
+      "cameras": [
+        "cam3"
+      ],
+      "locations": [],
+      "location_events": [],
+      "first_seen": 1784217597.830274,
+      "last_seen": 1784217634.125535
+    },
+    {
+      "person_id_a": "15",
+      "person_id_b": "17",
+      "confidence": 0.3748,
+      "relationship": "acquaintance",
+      "color": "#098ec9",
+      "incident_counts": {
+        "PROXIMITY": 34
+      },
+      "last_incident": "PROXIMITY",
+      "meetings_today": 34,
+      "total_meetings": 34,
+      "avg_duration_s": 2.7,
+      "total_duration_s": 93.3,
+      "cameras": [
+        "cam3",
+        "cam1"
+      ],
+      "locations": [],
+      "location_events": [],
+      "first_seen": 1784217729.726292,
+      "last_seen": 1784223804.091079
+    },
+    {
+      "person_id_a": "15",
+      "person_id_b": "16",
+      "confidence": 0.9881,
+      "relationship": "significant",
+      "color": "#a31e1e",
+      "incident_counts": {
+        "PROXIMITY": 13,
+        "CLOSE_CONTACT": 5
+      },
+      "last_incident": "CLOSE_CONTACT",
+      "meetings_today": 18,
+      "total_meetings": 18,
+      "avg_duration_s": 4.1,
+      "total_duration_s": 73.0,
+      "cameras": [
+        "cam3",
+        "cam2"
+      ],
+      "locations": [],
+      "location_events": [],
+      "first_seen": 1784217773.436181,
+      "last_seen": 1784220172.979168
+    },
+    {
+      "person_id_a": "15",
+      "person_id_b": "19",
+      "confidence": 0.2008,
+      "relationship": "acquaintance",
+      "color": "#b5e6fc",
+      "incident_counts": {
+        "PROXIMITY": 14
+      },
+      "last_incident": "PROXIMITY",
+      "meetings_today": 14,
+      "total_meetings": 14,
+      "avg_duration_s": 2.6,
+      "total_duration_s": 36.1,
+      "cameras": [
+        "cam3"
+      ],
+      "locations": [],
+      "location_events": [],
+      "first_seen": 1784217811.718051,
+      "last_seen": 1784218007.362047
+    },
+    {
+      "person_id_a": "16",
+      "person_id_b": "19",
+      "confidence": 0.2862,
+      "relationship": "acquaintance",
+      "color": "#4dc2f7",
+      "incident_counts": {
+        "PROXIMITY": 17,
+        "CLOSE_CONTACT": 1
+      },
+      "last_incident": "PROXIMITY",
+      "meetings_today": 18,
+      "total_meetings": 18,
+      "avg_duration_s": 2.4,
+      "total_duration_s": 42.9,
+      "cameras": [
+        "cam3"
+      ],
+      "locations": [],
+      "location_events": [],
+      "first_seen": 1784217787.893792,
+      "last_seen": 1784218008.529663
+    },
+    {
+      "person_id_a": "16",
+      "person_id_b": "17",
+      "confidence": 0.1648,
+      "relationship": "stranger",
+      "color": "#828282",
+      "incident_counts": {
+        "PROXIMITY": 7
+      },
+      "last_incident": "PROXIMITY",
+      "meetings_today": 7,
+      "total_meetings": 7,
+      "avg_duration_s": 6.8,
+      "total_duration_s": 47.8,
+      "cameras": [
+        "cam1"
+      ],
+      "locations": [],
+      "location_events": [],
+      "first_seen": 1784217795.337512,
+      "last_seen": 1784217995.9622378
+    },
+    {
+      "person_id_a": "17",
+      "person_id_b": "18",
+      "confidence": 0.0959,
+      "relationship": "stranger",
+      "color": "#a1a1a1",
+      "incident_counts": {
+        "PROXIMITY": 5
+      },
+      "last_incident": "PROXIMITY",
+      "meetings_today": 5,
+      "total_meetings": 5,
+      "avg_duration_s": 2.1,
+      "total_duration_s": 10.3,
+      "cameras": [
+        "cam1"
+      ],
+      "locations": [],
+      "location_events": [],
+      "first_seen": 1784217808.589473,
+      "last_seen": 1784217938.829771
+    },
+    {
+      "person_id_a": "18",
+      "person_id_b": "21",
+      "confidence": 0.0944,
+      "relationship": "stranger",
+      "color": "#a2a2a2",
+      "incident_counts": {
+        "PROXIMITY": 4
+      },
+      "last_incident": "PROXIMITY",
+      "meetings_today": 4,
+      "total_meetings": 4,
+      "avg_duration_s": 2.1,
+      "total_duration_s": 8.4,
+      "cameras": [
+        "cam3"
+      ],
+      "locations": [],
+      "location_events": [],
+      "first_seen": 1784217601.2901802,
+      "last_seen": 1784217659.692023
+    },
+    {
+      "person_id_a": "18",
+      "person_id_b": "19",
+      "confidence": 0.4909,
+      "relationship": "associate",
+      "color": "#7ac47d",
+      "incident_counts": {
+        "PROXIMITY": 3,
+        "CLOSE_CONTACT": 2
+      },
+      "last_incident": "CLOSE_CONTACT",
+      "meetings_today": 5,
+      "total_meetings": 5,
+      "avg_duration_s": 2.2,
+      "total_duration_s": 10.8,
+      "cameras": [
+        "cam3",
+        "cam1"
+      ],
+      "locations": [],
+      "location_events": [],
+      "first_seen": 1784217603.212574,
+      "last_seen": 1784217657.2660632
+    }
+  ],
+  "communities": [
+    {
+      "community_id": 35,
+      "members": [
+        "13",
+        "14",
+        "15",
+        "16",
+        "17",
+        "20"
+      ],
+      "size": 6,
+      "edge_count": 11
+    },
+    {
+      "community_id": 36,
+      "members": [
+        "18",
+        "19",
+        "21"
+      ],
+      "size": 3,
+      "edge_count": 2
+    },
+    {
+      "community_id": 1,
+      "members": [
+        "PERSON_00020"
+      ],
+      "size": 1,
+      "edge_count": 0
+    },
+    {
+      "community_id": 2,
+      "members": [
+        "PERSON_00021"
+      ],
+      "size": 1,
+      "edge_count": 0
+    },
+    {
+      "community_id": 3,
+      "members": [
+        "PERSON_00023"
+      ],
+      "size": 1,
+      "edge_count": 0
+    },
+    {
+      "community_id": 4,
+      "members": [
+        "PERSON_00024"
+      ],
+      "size": 1,
+      "edge_count": 0
+    },
+    {
+      "community_id": 5,
+      "members": [
+        "PERSON_00016"
+      ],
+      "size": 1,
+      "edge_count": 0
+    },
+    {
+      "community_id": 6,
+      "members": [
+        "PERSON_00025"
+      ],
+      "size": 1,
+      "edge_count": 0
+    },
+    {
+      "community_id": 7,
+      "members": [
+        "PERSON_00002"
+      ],
+      "size": 1,
+      "edge_count": 0
+    },
+    {
+      "community_id": 8,
+      "members": [
+        "PERSON_00003"
+      ],
+      "size": 1,
+      "edge_count": 0
+    },
+    {
+      "community_id": 9,
+      "members": [
+        "PERSON_00004"
+      ],
+      "size": 1,
+      "edge_count": 0
+    },
+    {
+      "community_id": 10,
+      "members": [
+        "PERSON_00008"
+      ],
+      "size": 1,
+      "edge_count": 0
+    },
+    {
+      "community_id": 11,
+      "members": [
+        "PERSON_00009"
+      ],
+      "size": 1,
+      "edge_count": 0
+    },
+    {
+      "community_id": 12,
+      "members": [
+        "PERSON_00011"
+      ],
+      "size": 1,
+      "edge_count": 0
+    },
+    {
+      "community_id": 13,
+      "members": [
+        "PERSON_00013"
+      ],
+      "size": 1,
+      "edge_count": 0
+    },
+    {
+      "community_id": 14,
+      "members": [
+        "PERSON_00006"
+      ],
+      "size": 1,
+      "edge_count": 0
+    },
+    {
+      "community_id": 15,
+      "members": [
+        "PERSON_00005"
+      ],
+      "size": 1,
+      "edge_count": 0
+    },
+    {
+      "community_id": 16,
+      "members": [
+        "PERSON_00046"
+      ],
+      "size": 1,
+      "edge_count": 0
+    },
+    {
+      "community_id": 17,
+      "members": [
+        "PERSON_00048"
+      ],
+      "size": 1,
+      "edge_count": 0
+    },
+    {
+      "community_id": 18,
+      "members": [
+        "PERSON_00029"
+      ],
+      "size": 1,
+      "edge_count": 0
+    },
+    {
+      "community_id": 19,
+      "members": [
+        "PERSON_00030"
+      ],
+      "size": 1,
+      "edge_count": 0
+    },
+    {
+      "community_id": 20,
+      "members": [
+        "PERSON_00031"
+      ],
+      "size": 1,
+      "edge_count": 0
+    },
+    {
+      "community_id": 21,
+      "members": [
+        "PERSON_00032"
+      ],
+      "size": 1,
+      "edge_count": 0
+    },
+    {
+      "community_id": 22,
+      "members": [
+        "PERSON_00033"
+      ],
+      "size": 1,
+      "edge_count": 0
+    },
+    {
+      "community_id": 23,
+      "members": [
+        "PERSON_00034"
+      ],
+      "size": 1,
+      "edge_count": 0
+    },
+    {
+      "community_id": 24,
+      "members": [
+        "PERSON_00037"
+      ],
+      "size": 1,
+      "edge_count": 0
+    },
+    {
+      "community_id": 25,
+      "members": [
+        "PERSON_00044"
+      ],
+      "size": 1,
+      "edge_count": 0
+    },
+    {
+      "community_id": 26,
+      "members": [
+        "PERSON_00050"
+      ],
+      "size": 1,
+      "edge_count": 0
+    },
+    {
+      "community_id": 27,
+      "members": [
+        "PERSON_00038"
+      ],
+      "size": 1,
+      "edge_count": 0
+    },
+    {
+      "community_id": 28,
+      "members": [
+        "PERSON_00039"
+      ],
+      "size": 1,
+      "edge_count": 0
+    },
+    {
+      "community_id": 29,
+      "members": [
+        "PERSON_00018"
+      ],
+      "size": 1,
+      "edge_count": 0
+    },
+    {
+      "community_id": 30,
+      "members": [
+        "PERSON_00019"
+      ],
+      "size": 1,
+      "edge_count": 0
+    },
+    {
+      "community_id": 31,
+      "members": [
+        "PERSON_00052"
+      ],
+      "size": 1,
+      "edge_count": 0
+    },
+    {
+      "community_id": 32,
+      "members": [
+        "PERSON_00001"
+      ],
+      "size": 1,
+      "edge_count": 0
+    },
+    {
+      "community_id": 33,
+      "members": [
+        "PERSON_00041"
+      ],
+      "size": 1,
+      "edge_count": 0
+    },
+    {
+      "community_id": 34,
+      "members": [
+        "PERSON_00036"
+      ],
+      "size": 1,
+      "edge_count": 0
+    },
+    {
+      "community_id": 37,
+      "members": [
+        "22"
+      ],
+      "size": 1,
+      "edge_count": 0
+    }
+  ]
+}

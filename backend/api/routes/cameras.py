@@ -5,13 +5,17 @@ from sqlalchemy.orm import Session
 from core.database import get_db
 from models.orm import Camera, Zone
 from models.domain import (
-    CameraResponse, CameraCreate, 
+    CameraResponse, CameraCreate,
     ZoneResponse, BuildingResponse,
-    PaginatedResponse
+    PaginatedResponse, BulkCameraFpsUpdate
 )
 from typing import List
+from workers.manager import process_manager
 
 router = APIRouter()
+
+MIN_TARGET_FPS = 1
+MAX_TARGET_FPS = 30
 
 # --- Cameras ---
 @router.get("/cameras", response_model=PaginatedResponse)
@@ -75,10 +79,32 @@ def patch_camera(id: str, payload: dict, db: Session = Depends(get_db)):
     if "zoneId" in payload: camera.zone_id = payload["zoneId"]
     if "buildingId" in payload: camera.building_id = payload["buildingId"]
     if "disabled" in payload: camera.is_active = not payload["disabled"]
-    
+    if "targetFps" in payload:
+        fps = max(MIN_TARGET_FPS, min(MAX_TARGET_FPS, int(payload["targetFps"])))
+        camera.target_fps = fps
+        process_manager.set_fps(camera.id, fps)
+
     db.commit()
     db.refresh(camera)
     return CameraResponse.model_validate(camera)
+
+@router.patch("/cameras", response_model=PaginatedResponse)
+def bulk_patch_camera_fps(payload: BulkCameraFpsUpdate, db: Session = Depends(get_db)):
+    """Bulk fps update — cameraIds is either an explicit list or the literal "all"."""
+    fps = max(MIN_TARGET_FPS, min(MAX_TARGET_FPS, payload.target_fps))
+
+    query = db.query(Camera)
+    if payload.camera_ids != "all":
+        query = query.filter(Camera.id.in_(payload.camera_ids))
+    cameras = query.all()
+
+    for camera in cameras:
+        camera.target_fps = fps
+        process_manager.set_fps(camera.id, fps)
+
+    db.commit()
+    items = [CameraResponse.model_validate(c) for c in cameras]
+    return PaginatedResponse(items=items, next_cursor=None)
 
 @router.post("/cameras/{id}/retire", response_model=CameraResponse)
 def retire_camera(id: str, payload: dict, db: Session = Depends(get_db)):

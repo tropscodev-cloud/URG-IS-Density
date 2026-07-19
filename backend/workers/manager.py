@@ -16,28 +16,32 @@ from .vision_pipeline import run_pipeline
 
 class CameraProcessManager:
     """Manages spawning, monitoring, and restarting of isolated camera workers."""
-    
+
     def __init__(self):
         self.processes: Dict[str, multiprocessing.Process] = {}
         self.manager = None
         self.queue = None
+        # camera_id -> target_fps, shared across the process pool. Workers poll this every
+        # processed frame so an fps change takes effect without a restart (see vision_pipeline.py).
+        self.fps_config = None
         self.running = False
         self.monitor_thread = None
 
     def start_all(self):
         if self.running:
             return
-            
+
         self.running = True
         logger.info("Initializing Camera Process Manager...")
-        
+
         # Defer creating the Manager and Queue until execution start_all
         self.manager = multiprocessing.Manager()
         self.queue = self.manager.Queue(maxsize=1000)
-        
+        self.fps_config = self.manager.dict()
+
         # Initial spawn of active cameras
         self._start_camera_workers()
-        
+
         # Start background health monitoring thread
         self.monitor_thread = threading.Thread(target=self._monitor_workers, daemon=True)
         self.monitor_thread.start()
@@ -56,7 +60,9 @@ class CameraProcessManager:
     def _spawn_worker(self, camera: Camera):
         if camera.id in self.processes and self.processes[camera.id].is_alive():
             return
-            
+
+        self.fps_config[camera.id] = camera.target_fps or 20
+
         p = multiprocessing.Process(
             target=run_pipeline,
             args=(
@@ -67,14 +73,23 @@ class CameraProcessManager:
                 camera.bearing,
                 camera.density_threshold,
                 camera.homography_matrix,
-                self.queue
+                self.queue,
+                self.fps_config,
             ),
             name=f"Worker-{camera.id}"
         )
         p.daemon = True
         p.start()
         self.processes[camera.id] = p
-        logger.success(f"Spawned child worker process {p.pid} for {camera.id}")
+        logger.success(f"Spawned child worker process {p.pid} for {camera.id} at {self.fps_config[camera.id]} fps")
+
+    def set_fps(self, camera_id: str, target_fps: int):
+        """Live-updates a running worker's sampling rate — picked up on its next processed frame,
+        no restart. Safe to call even if the camera isn't running yet (spawn will read the DB)."""
+        if self.fps_config is None:
+            return
+        clamped = max(1, min(30, target_fps))
+        self.fps_config[camera_id] = clamped
 
     def _monitor_workers(self):
         """Monitors workers, restarts crashes, and stops workers for cameras marked inactive."""
@@ -126,3 +141,7 @@ class CameraProcessManager:
             self.manager.shutdown()
             self.manager = None
         logger.info("All camera workers terminated successfully.")
+
+# Singleton — main.py's lifecycle hooks and api/routes/cameras.py's fps endpoints both need the
+# same instance (routes call set_fps() on a *running* pool; they can't own their own copy).
+process_manager = CameraProcessManager()

@@ -1,0 +1,8 @@
+# Evaluation-only dependencies (in addition to backend/requirements.txt).
+# Install into the SAME environment your backend runs in:
+#   pip install -r backend/requirements.txt
+#   pip install -r backend/eval/requirements-eval.txt
+ultralytics          # already a backend dep; pinned here so eval runs standalone
+motmetrics           # MOTA / IDF1 / ID-switch scoring for eval_tracking.py
+scipy                # ShanghaiTech .mat ground-truth loading for eval_counting.py
+pandas               # motmetrics dependency / summary tables

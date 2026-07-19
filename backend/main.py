@@ -17,7 +17,7 @@ from core.crowd_analytics import analytics_service
 from core.metrics_store import live_metrics
 from api.routes import auth, cameras, history, analytics
 from api.ws.connection import manager as ws_manager
-from workers.manager import CameraProcessManager
+from workers.manager import process_manager
 
 app = FastAPI(
     title="URG-IS Lightweight Backend API",
@@ -42,9 +42,6 @@ app.include_router(analytics.router, prefix="/api/v1", tags=["Analytics"])
 
 app.mount("/data", StaticFiles(directory="data"), name="data")
 
-# Initialize multiprocessing manager
-process_manager = CameraProcessManager()
-
 # latest_metrics_cache is now the shared live_metrics singleton from core.metrics_store
 # so that analytics routes (chatbot) can read live data without circular imports.
 latest_metrics_cache = live_metrics
@@ -63,10 +60,12 @@ async def websocket_queue_reader():
             seq = payload.get("seq", 0)
             metrics = payload.get("metrics", {})
             entities = payload.get("entities", [])
-            
+            video_time_s = payload.get("video_time_s")
+            effective_fps = payload.get("effective_fps")
+
             # Update the geofenced crowd analytics service with live coordinates
             analytics_service.process_entities(entities)
-            
+
             # Format to the camera metrics JSON schema expected by the React frontend
             ts_str = datetime.utcnow().isoformat() + "Z"
             metrics_data = {
@@ -78,7 +77,14 @@ async def websocket_queue_reader():
                 "movementPct": metrics.get("moving_percentage", 65.0),
                 "densityRisk": metrics.get("risk_percentage", 0.0) / 100.0,
                 "inferenceLatencyMs": 15,
-                "entities": entities
+                "entities": entities,
+                # Position within the *source* video file this frame's detections came from — lets
+                # a client seek its own <video> playback to match instead of free-running out of
+                # sync with when these boxes were actually observed.
+                "sourceVideoTimeS": video_time_s,
+                # What the worker is actually sampling at right now — may lag a moment behind a
+                # just-requested target_fps until the worker's next raw-frame poll picks it up.
+                "effectiveFps": effective_fps,
             }
             
             # Cache it

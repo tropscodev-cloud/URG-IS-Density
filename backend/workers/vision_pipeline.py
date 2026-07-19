@@ -16,6 +16,11 @@ from core.database import SessionLocal
 from models.orm import CameraHistory
 from ultralytics import YOLO
 
+# Px/video-second of bbox-center travel above which a tracked person counts as "moving" rather
+# than "static". Tuned loosely against 640x480 processing frames — well above typical detection
+# jitter for a standing person, well below normal walking pace crossing the frame.
+MOVEMENT_VELOCITY_THRESHOLD_PX_S = 30.0
+
 def project_to_gps(
     cx: float, cy: float, 
     H_matrix: Optional[np.ndarray], 
@@ -59,15 +64,20 @@ def project_to_gps(
     
     return {"x": round(lng, 6), "y": round(lat, 6)}
 
+DEFAULT_TARGET_FPS = 20
+MIN_TARGET_FPS = 1
+MAX_TARGET_FPS = 30
+
 def run_pipeline(
-    camera_id: str, 
-    rtsp_url: str, 
-    latitude: float, 
-    longitude: float, 
-    bearing: float, 
-    density_threshold: int, 
-    homography_matrix: Optional[list], 
-    output_queue
+    camera_id: str,
+    rtsp_url: str,
+    latitude: float,
+    longitude: float,
+    bearing: float,
+    density_threshold: int,
+    homography_matrix: Optional[list],
+    output_queue,
+    fps_config=None,
 ):
     logger.info(f"[{camera_id}] Spawned worker process. Source: {rtsp_url}")
     
@@ -106,14 +116,26 @@ def run_pipeline(
         db.close()
         return
 
+    # Source fps — needed to convert a frame position into a video-content timestamp. CPU YOLO
+    # inference is far slower than the source framerate, so consecutive *processed* frames can be
+    # seconds apart in wall-clock time while representing only a few frames' worth of new video
+    # content; movement/velocity below is computed against this video-time basis, not time.time(),
+    # or a slow-motion clip would read as "nobody is moving" even when everyone visibly is.
+    source_fps = cap.get(cv2.CAP_PROP_FPS)
+    if not source_fps or source_fps <= 0:
+        source_fps = 30.0
+
     frame_count = 0
     seq = 0
     last_db_write = time.time()
-    
+    last_video_time_s = 0.0
+
     # State tracking variables for advanced metrics (Flow Rate & Movement Rate)
-    # track_history: track_id -> list of (timestamp, coords)
+    # track_history: track_id -> list of (video_time_s, coords) — video_time_s, not wall-clock, see
+    # source_fps comment above.
     track_history: Dict[int, List[Tuple[float, Tuple[int, int]]]] = {}
-    new_tracks_last_minute: Dict[int, float] = {}  # track_id -> timestamp
+    new_tracks_last_minute: Dict[int, float] = {}  # track_id -> wall-clock timestamp (flow rate is
+    # deliberately a real-time "people seen in the last real minute" rate, not video-time based)
 
     try:
         while True:
@@ -130,11 +152,25 @@ def run_pipeline(
                     continue
             
             frame_count += 1
-            if frame_count % (settings.FRAME_SKIP + 1) != 0:
+
+            # Re-read every raw frame (cheap dict lookup vs. the inference below) so a live fps
+            # change — see workers/manager.py's set_fps() — takes effect on the very next frame
+            # instead of requiring a worker restart.
+            if fps_config is not None:
+                target_fps = fps_config.get(camera_id, DEFAULT_TARGET_FPS)
+            else:
+                target_fps = DEFAULT_TARGET_FPS
+            target_fps = max(MIN_TARGET_FPS, min(MAX_TARGET_FPS, target_fps))
+            frame_skip = max(0, round(source_fps / target_fps) - 1)
+            # What sampling rate frame_skip actually realizes, given integer rounding — this, not
+            # the requested target_fps, is what gets reported back to the client as "effective".
+            effective_fps = round(source_fps / (frame_skip + 1), 2)
+
+            if frame_count % (frame_skip + 1) != 0:
                 continue
-                
+
             frame_resized = cv2.resize(frame, (640, 480))
-            
+
             # YOLO tracking
             results = model.track(
                 frame_resized,
@@ -145,11 +181,22 @@ def run_pipeline(
                 device=settings.YOLO_DEVICE,
                 verbose=False
             )
-            
+
             headcount = 0
             entities = []
             now_ts = time.time()
-            
+
+            # Actual position within the source file (cv2.CAP_PROP_POS_FRAMES), not our own
+            # frame_count — that one never resets on the demo-loop seek back to frame 0, this one
+            # does, which is exactly what a frontend needs to seek its own <video> element to match.
+            video_pos_frames = cap.get(cv2.CAP_PROP_POS_FRAMES)
+            video_time_s = (video_pos_frames / source_fps) if source_fps > 0 else 0.0
+            if video_time_s < last_video_time_s:
+                # The demo loop just seeked back to frame 0 — track associations spanning that
+                # boundary are meaningless (and would otherwise produce a huge negative dt).
+                track_history.clear()
+            last_video_time_s = video_time_s
+
             moving_count = 0
             static_count = 0
             
@@ -185,33 +232,43 @@ def run_pipeline(
                             "confidence": float(conf)
                         })
                         
-                        # Track movement rate logic
+                        # Track movement rate logic — keyed on video_time_s (see source_fps comment
+                        # above), not wall-clock time, so inference latency doesn't distort velocity.
                         center = (cx, cy)
                         if track_id not in track_history:
                             track_history[track_id] = []
                             new_tracks_last_minute[track_id] = now_ts
-                            
-                        track_history[track_id].append((now_ts, center))
-                        
-                        # Prune older history
-                        track_history[track_id] = [pt for pt in track_history[track_id] if now_ts - pt[0] <= 3.0]
-                        
-                        # Calculate movement velocity in pixels
-                        if len(track_history[track_id]) > 1:
-                            start_pt = track_history[track_id][0][1]
-                            end_pt = track_history[track_id][-1][1]
-                            dist = math.sqrt((end_pt[0] - start_pt[0])**2 + (end_pt[1] - start_pt[1])**2)
-                            
-                            # Threshold of 15px travel over 3s defines movement
-                            if dist > 15:
+
+                        track_history[track_id].append((video_time_s, center))
+
+                        # Prune older history — 1.5s of *video* content is enough real-world motion
+                        # to judge walking vs. standing without going so wide that a track ramps up
+                        # its classification too slowly after first appearing.
+                        track_history[track_id] = [pt for pt in track_history[track_id] if video_time_s - pt[0] <= 1.5]
+
+                        # Classify by velocity (px per video-second), not a fixed distance over a
+                        # fixed window: since consecutive *processed* frames can be as little as one
+                        # FRAME_SKIP+1 apart in video time, a fixed-distance/fixed-window check
+                        # under-detects movement whenever inference is slow relative to source fps.
+                        start_ts, start_pt = track_history[track_id][0]
+                        end_ts, end_pt = track_history[track_id][-1]
+                        dt = end_ts - start_ts
+                        # Require a minimum video-time span before classifying — at very small dt,
+                        # ordinary detection-box jitter (a few px) translates into a huge apparent
+                        # velocity and would otherwise flag stationary people as moving.
+                        if dt >= 0.15:
+                            dist = math.sqrt((end_pt[0] - start_pt[0]) ** 2 + (end_pt[1] - start_pt[1]) ** 2)
+                            velocity_px_per_s = dist / dt
+                            if velocity_px_per_s > MOVEMENT_VELOCITY_THRESHOLD_PX_S:
                                 moving_count += 1
                             else:
                                 static_count += 1
                         else:
                             static_count += 1
             
-            # Prune stale tracks from history
-            stale_ids = [tid for tid in track_history if now_ts - track_history[tid][-1][0] > 5.0]
+            # Prune stale tracks from history (video_time_s basis — see above; a wall-clock
+            # comparison against a video-time value would prune everything on the very first frame).
+            stale_ids = [tid for tid in track_history if video_time_s - track_history[tid][-1][0] > 2.5]
             for tid in stale_ids:
                 track_history.pop(tid, None)
                 
@@ -257,6 +314,8 @@ def run_pipeline(
                 "camera_id": camera_id,
                 "seq": seq,
                 "server_time": int(now_ts * 1000),
+                "video_time_s": round(video_time_s, 3),
+                "effective_fps": effective_fps,
                 "metrics": {
                     "headcount": headcount,
                     "flow_rate": flow_rate,

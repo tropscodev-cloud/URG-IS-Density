@@ -1,7 +1,7 @@
 # models/domain.py
 from pydantic import BaseModel, ConfigDict, Field
 from pydantic.alias_generators import to_camel
-from typing import List, Optional, Any
+from typing import List, Optional, Any, Union, Literal
 
 class CamelModel(BaseModel):
     model_config = ConfigDict(
@@ -57,6 +57,7 @@ class CameraResponse(CamelModel):
     retired_reason: Optional[str] = None
     retired_by: Optional[str] = None
     uptime_pct_30d: Optional[float] = Field(default=100.0, serialization_alias="uptimePct30d")
+    target_fps: Optional[int] = 20
     created_at: Any = None
     updated_at: Any = None
 
@@ -83,6 +84,14 @@ class CameraCreate(CamelModel):
     fov_angle: float = 60.0
     range: float = 50.0
     tags: List[str] = []
+
+class CameraFpsUpdate(CamelModel):
+    target_fps: int
+
+class BulkCameraFpsUpdate(CamelModel):
+    # Either explicit camera ids or the literal string "all".
+    camera_ids: Union[List[str], Literal["all"]]
+    target_fps: int
 
 class ZoneResponse(CamelModel):
     id: str

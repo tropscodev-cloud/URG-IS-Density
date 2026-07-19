@@ -19,6 +19,9 @@ class Camera(Base):
     density_threshold = Column(Integer, default=10)
     homography_matrix = Column(JSON, nullable=True)
     is_active = Column(Boolean, default=True)
+    # Frames sampled per second for YOLO inference. Default of 20 matches this codebase's
+    # pre-existing FRAME_SKIP=2 behavior against ~60fps source footage (60 / (2+1) = 20).
+    target_fps = Column(Integer, default=20, nullable=False)
     
     # Advanced fields mapping to the React frontend
     zone_id = Column(String(50), nullable=True, default="ZONE_001")

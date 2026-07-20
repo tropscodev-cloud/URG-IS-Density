@@ -3,58 +3,207 @@ import time
 import uuid
 from datetime import datetime, timedelta
 from typing import Optional, List
-from fastapi import APIRouter, Depends, Query, HTTPException
+from fastapi import APIRouter, Depends, Query, HTTPException, Request
 from sqlalchemy.orm import Session
 from core.database import get_db
-from models.orm import Camera, CameraHistory
-from models.domain import PaginatedResponse
+from core.alert_engine import alert_engine
+from core.audit import write_audit, client_ip
+from models.orm import Camera, CameraHistory, Alert, ThresholdConfig
+from models.domain import PaginatedResponse, AckAlertRequest, BulkAckRequest, SetThresholdRequest
 from api.routes.auth import get_current_user
+from api.ws.connection import manager as ws_manager
 
 # Router-level dependency — see cameras.py for why this is enforced here rather than per-route.
 router = APIRouter(dependencies=[Depends(get_current_user)])
 
+
+def _iso(dt) -> Optional[str]:
+    return dt.isoformat() + "Z" if dt else None
+
+
+def serialize_alert(a: Alert) -> dict:
+    return {
+        "id": a.id,
+        "cameraId": a.camera_id,
+        "zoneId": a.zone_id,
+        "severity": a.severity,
+        "status": a.status,
+        "metric": a.metric,
+        "thresholdValue": a.threshold_value,
+        "observedValue": a.observed_value,
+        "raisedAt": _iso(a.raised_at),
+        "ackedAt": _iso(a.acked_at),
+        "ackedBy": a.acked_by,
+        "ackNote": a.ack_note,
+        "resolvedAt": _iso(a.resolved_at),
+        "resolvedBy": a.resolved_by,
+        "escalatedAt": _iso(a.escalated_at),
+        "escalatedBy": a.escalated_by,
+    }
+
+
+def serialize_threshold(t: ThresholdConfig) -> dict:
+    return {
+        "scopeType": t.scope_type,
+        "scopeId": t.scope_id,
+        "metric": t.metric,
+        "warningAt": t.warning_at,
+        "criticalAt": t.critical_at,
+        "sustainedSeconds": t.sustained_seconds,
+        "cooldownSeconds": t.cooldown_seconds,
+        "updatedBy": t.updated_by,
+        "updatedAt": _iso(t.updated_at),
+    }
+
+
+async def _broadcast_alert_event(event: str, alert_data: dict) -> None:
+    await ws_manager.broadcast_alerts({
+        "type": "alert",
+        "topic": "alerts",
+        "event": event,
+        "alert": alert_data,
+    })
+
+
 # --- Alerts ---
 @router.get("/alerts", response_model=PaginatedResponse)
-def get_alerts():
-    # Return empty list of active alerts to satisfy query
-    return PaginatedResponse(items=[], next_cursor=None)
+def get_alerts(
+    status: Optional[str] = Query(None),
+    severity: Optional[str] = Query(None),
+    zoneId: Optional[str] = Query(None),
+    cameraId: Optional[str] = Query(None),
+    limit: int = Query(200, ge=1, le=500),
+    db: Session = Depends(get_db),
+):
+    q = db.query(Alert)
+    if status:
+        q = q.filter(Alert.status == status)
+    if severity:
+        q = q.filter(Alert.severity == severity)
+    if zoneId:
+        q = q.filter(Alert.zone_id == zoneId)
+    if cameraId:
+        q = q.filter(Alert.camera_id == cameraId)
+    rows = q.order_by(Alert.raised_at.desc()).limit(limit).all()
+    return PaginatedResponse(items=[serialize_alert(r) for r in rows], next_cursor=None)
 
 @router.post("/alerts/{id}/ack")
-def ack_alert(id: str, payload: dict):
-    return {"id": id, "status": "ACKED", "ackedAt": datetime.utcnow().isoformat() + "Z"}
+async def ack_alert(id: str, payload: AckAlertRequest, request: Request, db: Session = Depends(get_db), user=Depends(get_current_user)):
+    row = db.query(Alert).filter(Alert.id == id).first()
+    if not row:
+        raise HTTPException(status_code=404, detail="Alert not found")
+    row.status = "ACKED"
+    row.acked_at = datetime.utcnow()
+    row.acked_by = user["username"]
+    row.ack_note = payload.note
+    write_audit(db, user["id"], "alert_ack", target_type="alert", target_id=id,
+                detail={"note": payload.note}, source_ip=client_ip(request))
+    db.commit()
+    db.refresh(row)
+    data = serialize_alert(row)
+    await _broadcast_alert_event("acked", data)
+    return data
 
 @router.post("/alerts/bulk-ack")
-def bulk_ack_alerts(payload: dict):
-    ids = payload.get("alertIds", [])
-    results = [{"id": aid, "ok": True} for aid in ids]
+async def bulk_ack_alerts(payload: BulkAckRequest, request: Request, db: Session = Depends(get_db), user=Depends(get_current_user)):
+    results = []
+    acked_ids = []
+    for aid in payload.alert_ids:
+        row = db.query(Alert).filter(Alert.id == aid).first()
+        if not row:
+            results.append({"id": aid, "ok": False, "error": "not_found"})
+            continue
+        if row.status != "OPEN":
+            results.append({"id": aid, "ok": False, "error": "not_open"})
+            continue
+        row.status = "ACKED"
+        row.acked_at = datetime.utcnow()
+        row.acked_by = user["username"]
+        row.ack_note = payload.note
+        db.commit()
+        db.refresh(row)
+        await _broadcast_alert_event("acked", serialize_alert(row))
+        results.append({"id": aid, "ok": True})
+        acked_ids.append(aid)
+
+    if acked_ids:
+        write_audit(db, user["id"], "alert_bulk_ack", target_type="alert",
+                    detail={"alertIds": acked_ids, "note": payload.note}, source_ip=client_ip(request))
+        db.commit()
     return {"results": results}
 
 @router.post("/alerts/{id}/resolve")
-def resolve_alert(id: str):
-    return {"id": id, "status": "RESOLVED", "resolvedAt": datetime.utcnow().isoformat() + "Z"}
+async def resolve_alert(id: str, request: Request, db: Session = Depends(get_db), user=Depends(get_current_user)):
+    row = db.query(Alert).filter(Alert.id == id).first()
+    if not row:
+        raise HTTPException(status_code=404, detail="Alert not found")
+    row.status = "RESOLVED"
+    row.resolved_at = datetime.utcnow()
+    row.resolved_by = user["username"]
+    write_audit(db, user["id"], "alert_resolve", target_type="alert", target_id=id, source_ip=client_ip(request))
+    db.commit()
+    db.refresh(row)
+    alert_engine.mark_resolved_externally(row.camera_id, row.resolved_at.timestamp())
+    data = serialize_alert(row)
+    await _broadcast_alert_event("resolved", data)
+    return data
 
 @router.post("/alerts/{id}/escalate")
-def escalate_alert(id: str):
-    return {"id": id, "status": "ESCALATED", "escalatedAt": datetime.utcnow().isoformat() + "Z"}
+async def escalate_alert(id: str, request: Request, db: Session = Depends(get_db), user=Depends(get_current_user)):
+    row = db.query(Alert).filter(Alert.id == id).first()
+    if not row:
+        raise HTTPException(status_code=404, detail="Alert not found")
+    row.status = "ESCALATED"
+    row.escalated_at = datetime.utcnow()
+    row.escalated_by = user["username"]
+    write_audit(db, user["id"], "alert_escalate", target_type="alert", target_id=id, source_ip=client_ip(request))
+    db.commit()
+    db.refresh(row)
+    data = serialize_alert(row)
+    await _broadcast_alert_event("escalated", data)
+    return data
 
 # --- Thresholds ---
 @router.get("/thresholds", response_model=PaginatedResponse)
-def get_thresholds():
-    return PaginatedResponse(items=[], next_cursor=None)
+def get_thresholds(db: Session = Depends(get_db)):
+    rows = db.query(ThresholdConfig).all()
+    return PaginatedResponse(items=[serialize_threshold(r) for r in rows], next_cursor=None)
 
 @router.put("/thresholds")
-def set_threshold(payload: dict):
-    return {
-        "scopeType": payload.get("scopeType", "camera"),
-        "scopeId": payload.get("scopeId", ""),
-        "metric": payload.get("metric", "headcount"),
-        "warningAt": payload.get("warningAt", 10),
-        "criticalAt": payload.get("criticalAt", 20),
-        "sustainedSeconds": payload.get("sustainedSeconds", 5),
-        "cooldownSeconds": payload.get("cooldownSeconds", 60),
-        "updatedBy": "admin",
-        "updatedAt": datetime.utcnow().isoformat() + "Z"
-    }
+def set_threshold(payload: SetThresholdRequest, request: Request, db: Session = Depends(get_db), user=Depends(get_current_user)):
+    row = (
+        db.query(ThresholdConfig)
+        .filter(
+            ThresholdConfig.scope_type == payload.scope_type,
+            ThresholdConfig.scope_id == payload.scope_id,
+            ThresholdConfig.metric == payload.metric,
+        )
+        .first()
+    )
+    if row is None:
+        row = ThresholdConfig(scope_type=payload.scope_type, scope_id=payload.scope_id, metric=payload.metric)
+        db.add(row)
+
+    row.warning_at = payload.warning_at
+    row.critical_at = payload.critical_at
+    row.sustained_seconds = payload.sustained_seconds
+    row.cooldown_seconds = payload.cooldown_seconds
+    row.updated_by = user["username"]
+    row.updated_at = datetime.utcnow()
+    write_audit(db, user["id"], "threshold_update", target_type="threshold",
+                target_id=f"{payload.scope_type}:{payload.scope_id}:{payload.metric}",
+                detail={"warningAt": payload.warning_at, "criticalAt": payload.critical_at,
+                        "sustainedSeconds": payload.sustained_seconds, "cooldownSeconds": payload.cooldown_seconds},
+                source_ip=client_ip(request))
+    db.commit()
+    db.refresh(row)
+
+    # Threshold changes must take effect on the very next frame the engine evaluates, not after a
+    # restart — it caches configs in memory for the same reason CrowdAnalyticsService caches
+    # zones (avoiding a DB round-trip on every frame).
+    alert_engine.load_configs()
+
+    return serialize_threshold(row)
 
 # --- Audit Logs ---
 @router.get("/audit/events", response_model=PaginatedResponse)

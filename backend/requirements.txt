@@ -9,5 +9,7 @@ opencv-python-headless
 numpy
 python-dotenv
 pyjwt
-passlib[bcrypt]
+bcrypt
+pyotp
+cryptography
 loguru

@@ -14,11 +14,14 @@ import uvicorn
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 
 from core.config import settings
-from core.database import init_db
+from core.database import init_db, SessionLocal
 from core.crowd_analytics import analytics_service
+from core.alert_engine import alert_engine
 from core.metrics_store import live_metrics
-from api.routes import auth, cameras, history, analytics
+from api.routes import auth, cameras, history, analytics, users, telemetry
+from api.routes.analytics import serialize_alert
 from api.ws.connection import manager as ws_manager
+from models.orm import User
 from workers.manager import process_manager
 
 app = FastAPI(
@@ -43,6 +46,8 @@ app.include_router(auth.router, prefix="/api/v1/auth", tags=["Authentication"])
 app.include_router(cameras.router, prefix="/api/v1", tags=["Cameras"])
 app.include_router(history.router, prefix="/api/v1", tags=["History"])
 app.include_router(analytics.router, prefix="/api/v1", tags=["Analytics"])
+app.include_router(users.router, prefix="/api/v1/users", tags=["Users"])
+app.include_router(telemetry.router, prefix="/api/v1", tags=["Telemetry"])
 
 app.mount("/data", StaticFiles(directory="data"), name="data")
 
@@ -111,7 +116,23 @@ async def websocket_queue_reader():
             
             # Broadcast metrics payload to active websockets
             await ws_manager.broadcast_camera_metrics(camera_id, metrics_msg)
-            
+
+            # Real-time density alerting: hysteresis-debounced threshold crossing, evaluated every
+            # frame (cheap, in-memory) but only ever written to the DB on an actual state
+            # transition (raise/upgrade/resolve) — and that write runs off the event loop for the
+            # same reason the zone-history write above does.
+            alert_action = alert_engine.evaluate(camera_id, metrics_data["densityRisk"])
+            if alert_action is not None:
+                alert_row = await loop.run_in_executor(None, alert_engine.apply_action, alert_action)
+                if alert_row is not None:
+                    event = "resolved" if alert_action["type"] == "resolve" else "raised"
+                    await ws_manager.broadcast_alerts({
+                        "type": "alert",
+                        "topic": "alerts",
+                        "event": event,
+                        "alert": serialize_alert(alert_row),
+                    })
+
         except Exception as e:
             logger.error(f"Error in WebSocket queue reader: {e}")
             await asyncio.sleep(0.1)
@@ -146,7 +167,13 @@ async def global_fleet_snapshot_loop():
 async def startup_event():
     logger.info("Initializing database schemas...")
     init_db()
-    
+
+    # alert_engine is constructed as a module-level singleton (import time, before init_db() has
+    # necessarily created its tables on a brand-new DB file) — refresh both caches now that the
+    # schema and seed cameras are guaranteed to exist.
+    alert_engine.load_configs()
+    alert_engine.load_camera_zones()
+
     logger.info("Starting background camera processes...")
     process_manager.start_all()
     
@@ -167,8 +194,18 @@ async def websocket_endpoint(websocket: WebSocket):
     authenticated = False
     if session_token:
         try:
-            jwt.decode(session_token, settings.JWT_SECRET, algorithms=[settings.JWT_ALGORITHM])
-            authenticated = True
+            payload = jwt.decode(session_token, settings.JWT_SECRET, algorithms=[settings.JWT_ALGORITHM])
+            # Scoped reset/enroll tokens must never authenticate a WS connection either, and a
+            # deactivated user's still-unexpired JWT must stop working here too — same DB-backed
+            # check get_current_user applies to every REST call, done inline since this handshake
+            # runs before any FastAPI dependency injection.
+            if payload.get("purpose") is None and payload.get("sub"):
+                db = SessionLocal()
+                try:
+                    user = db.query(User).filter(User.id == payload["sub"]).first()
+                    authenticated = bool(user and user.is_active)
+                finally:
+                    db.close()
         except jwt.PyJWTError:
             pass
     if not authenticated:

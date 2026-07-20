@@ -24,6 +24,11 @@ class Settings(BaseSettings):
     FRAME_SKIP: int = int(os.getenv("FRAME_SKIP", "2"))
     JWT_SECRET: str = os.getenv("JWT_SECRET")
     JWT_ALGORITHM: str = "HS256"
+    # Symmetric key (Fernet) used to encrypt per-user TOTP secrets at rest — separate from
+    # JWT_SECRET so rotating one doesn't force rotating the other. Same fail-fast rationale as
+    # JWT_SECRET/DATABASE_URL below: no default, because a working fallback here is exactly the
+    # kind of thing that quietly ships to a real deployment unrotated.
+    MFA_ENCRYPTION_KEY: str = os.getenv("MFA_ENCRYPTION_KEY")
     BOTSORT_BUFFER_FRAMES: int = int(os.getenv("BOTSORT_BUFFER_FRAMES", "90"))
     CALIB_DIR: str = os.getenv("CALIB_DIR", "data/calib")
     AUTO_CALIB_ON_STARTUP: bool = os.getenv("AUTO_CALIB_ON_STARTUP", "false").lower() == "true"
@@ -42,3 +47,6 @@ if not settings.JWT_SECRET:
 
 if not settings.DATABASE_URL:
     raise RuntimeError("DATABASE_URL not set")
+
+if not settings.MFA_ENCRYPTION_KEY:
+    raise RuntimeError("MFA_ENCRYPTION_KEY not set")

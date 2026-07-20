@@ -10,9 +10,26 @@ class CamelModel(BaseModel):
         from_attributes=True
     )
 
-class LoginRequest(BaseModel):
+class LoginRequest(CamelModel):
     username: str
     password: str
+    totp_code: Optional[str] = None
+
+class ResetPasswordRequest(CamelModel):
+    reset_token: str
+    new_password: str
+
+class MfaEnrollRequest(CamelModel):
+    enroll_token: Optional[str] = None
+
+class UserCreateRequest(CamelModel):
+    username: str
+    role: Literal["OPERATOR", "SUPERVISOR", "ADMIN"]
+    display_name: Optional[str] = None
+
+class UserUpdateRequest(CamelModel):
+    role: Optional[Literal["OPERATOR", "SUPERVISOR", "ADMIN"]] = None
+    is_active: Optional[bool] = None
 
 class CameraMetricsResponse(CamelModel):
     camera_id: str
@@ -119,3 +136,19 @@ class BuildingResponse(CamelModel):
 class PaginatedResponse(CamelModel):
     items: List[Any]
     next_cursor: Optional[str] = None
+
+class AckAlertRequest(CamelModel):
+    note: Optional[str] = None
+
+class BulkAckRequest(CamelModel):
+    alert_ids: List[str]
+    note: Optional[str] = None
+
+class SetThresholdRequest(CamelModel):
+    scope_type: Literal["camera", "zone"]
+    scope_id: str
+    metric: Literal["densityRisk", "headcount", "flowRate"]
+    warning_at: float
+    critical_at: float
+    sustained_seconds: int = 12
+    cooldown_seconds: int = 45

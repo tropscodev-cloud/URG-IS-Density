@@ -77,6 +77,23 @@ class ConnectionManager:
         for ws in disconnected_sockets:
             self.disconnect(ws)
 
+    async def broadcast_alerts(self, alert_msg: dict):
+        """Broadcasts an alert lifecycle event (raised/acked/resolved/escalated) to clients
+        subscribed to the 'alerts' topic. Unrated — alert transitions are rare compared to the
+        4 Hz per-camera metrics stream, so there's no backpressure concern to cap here."""
+        disconnected_sockets = []
+
+        for websocket, subscriptions in list(self.active_connections.items()):
+            if "alerts" in subscriptions:
+                try:
+                    await websocket.send_json(alert_msg)
+                except Exception as e:
+                    logger.error(f"Failed to send alert event to client: {e}")
+                    disconnected_sockets.append(websocket)
+
+        for ws in disconnected_sockets:
+            self.disconnect(ws)
+
     async def broadcast_global(self, snapshot_msg: dict):
         """Broadcasts fleet_snapshot message to all clients subscribed to the 'global' topic."""
         disconnected_sockets = []

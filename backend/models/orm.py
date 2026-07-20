@@ -89,3 +89,72 @@ class ZoneHistory(Base):
     timestamp = Column(DateTime(timezone=True), default=func.now(), index=True)
     headcount = Column(Integer, nullable=False)
     density_percentage = Column(Float, nullable=False)
+
+class Alert(Base):
+    __tablename__ = "alerts"
+
+    id = Column(String(50), primary_key=True, index=True)
+    camera_id = Column(String(50), ForeignKey("cameras.id", ondelete="CASCADE"), nullable=False, index=True)
+    zone_id = Column(String(50), nullable=True, index=True)
+    severity = Column(String(20), nullable=False)  # INFO | WARNING | CRITICAL
+    status = Column(String(20), nullable=False, default="OPEN", index=True)  # OPEN | ACKED | RESOLVED | ESCALATED
+    metric = Column(String(20), nullable=False)  # densityRisk | headcount | flowRate
+    threshold_value = Column(Float, nullable=False)
+    observed_value = Column(Float, nullable=False)
+    raised_at = Column(DateTime(timezone=True), server_default=func.now(), index=True)
+    acked_at = Column(DateTime(timezone=True), nullable=True)
+    acked_by = Column(String(100), nullable=True)
+    ack_note = Column(String(500), nullable=True)
+    resolved_at = Column(DateTime(timezone=True), nullable=True)
+    resolved_by = Column(String(100), nullable=True)
+    escalated_at = Column(DateTime(timezone=True), nullable=True)
+    escalated_by = Column(String(100), nullable=True)
+
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(String(50), primary_key=True, index=True)
+    username = Column(String(100), unique=True, nullable=False, index=True)
+    display_name = Column(String(150), nullable=True)
+    password_hash = Column(String(255), nullable=False)
+    role = Column(String(20), nullable=False)  # OPERATOR | SUPERVISOR | ADMIN
+    is_active = Column(Boolean, nullable=False, default=True)
+    # True until the user has set their own password — a temp/admin-issued password can never be
+    # used to establish a real session, only to reach the reset-password flow.
+    must_reset_password = Column(Boolean, nullable=False, default=True)
+    # Fernet-encrypted TOTP secret; NULL means "not yet enrolled". Never stored or returned in
+    # plaintext once enrollment completes.
+    mfa_secret_encrypted = Column(String(255), nullable=True)
+    created_by = Column(String(50), nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    last_login_at = Column(DateTime(timezone=True), nullable=True)
+
+class AuditLog(Base):
+    """Append-only — no route ever updates or deletes a row here, only inserts."""
+    __tablename__ = "audit_logs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    # Nullable: a failed login against an unknown/not-yet-resolved username has no real actor id
+    # to attach — the attempted username is captured in `detail` instead.
+    actor_user_id = Column(String(50), nullable=True, index=True)
+    action = Column(String(100), nullable=False, index=True)
+    target_type = Column(String(50), nullable=True)
+    target_id = Column(String(100), nullable=True)
+    detail = Column(JSON, nullable=True)
+    timestamp = Column(DateTime(timezone=True), server_default=func.now(), index=True)
+    source_ip = Column(String(64), nullable=True)
+
+class ThresholdConfig(Base):
+    __tablename__ = "threshold_configs"
+
+    # Natural composite key — one row per (scope, metric) pair matches the PUT /thresholds
+    # upsert semantics exactly: setting a zone's densityRisk threshold again just replaces it.
+    scope_type = Column(String(10), primary_key=True)  # camera | zone
+    scope_id = Column(String(50), primary_key=True)
+    metric = Column(String(20), primary_key=True)
+    warning_at = Column(Float, nullable=False)
+    critical_at = Column(Float, nullable=False)
+    sustained_seconds = Column(Integer, nullable=False, default=12)
+    cooldown_seconds = Column(Integer, nullable=False, default=45)
+    updated_by = Column(String(100), nullable=True)
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())

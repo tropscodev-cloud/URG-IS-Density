@@ -1,8 +1,10 @@
 # api/routes/cameras.py
 import random
-from fastapi import APIRouter, Depends, HTTPException
+from datetime import datetime
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 from core.database import get_db
+from core.audit import write_audit, client_ip
 from models.orm import Camera, Zone
 from models.domain import (
     CameraResponse, CameraCreate,
@@ -11,10 +13,12 @@ from models.domain import (
 )
 from typing import List
 from workers.manager import process_manager
-from api.routes.auth import get_current_user
+from api.routes.auth import get_current_user, require_role
 
 # Router-level dependency — every route on this router requires a valid session by construction,
-# so a route added later can't accidentally ship unauthenticated.
+# so a route added later can't accidentally ship unauthenticated. State-changing routes below
+# additionally require require_role("ADMIN") — camera configuration is admin-only, not something
+# any authenticated OPERATOR/SUPERVISOR session should be able to write.
 router = APIRouter(dependencies=[Depends(get_current_user)])
 
 MIN_TARGET_FPS = 1
@@ -40,11 +44,11 @@ def get_camera(id: str, db: Session = Depends(get_db)):
     return CameraResponse.model_validate(camera)
 
 @router.post("/cameras", response_model=CameraResponse)
-def create_camera(payload: CameraCreate, db: Session = Depends(get_db)):
+def create_camera(payload: CameraCreate, request: Request, db: Session = Depends(get_db), admin: dict = Depends(require_role("ADMIN"))):
     camera = db.query(Camera).filter(Camera.id == payload.id).first()
     if camera:
         raise HTTPException(status_code=400, detail="Camera ID already exists")
-        
+
     cam_id = payload.id or f"CAM_{random.randint(100, 999)}"
     db_camera = Camera(
         id=cam_id,
@@ -61,38 +65,45 @@ def create_camera(payload: CameraCreate, db: Session = Depends(get_db)):
         is_active=True
     )
     db.add(db_camera)
+    write_audit(db, admin["id"], "camera_create", target_type="camera", target_id=cam_id,
+                detail={"name": payload.name, "zoneId": payload.zone_id}, source_ip=client_ip(request))
     db.commit()
     db.refresh(db_camera)
     return CameraResponse.model_validate(db_camera)
 
 @router.patch("/cameras/{id}", response_model=CameraResponse)
-def patch_camera(id: str, payload: dict, db: Session = Depends(get_db)):
+def patch_camera(id: str, payload: dict, request: Request, db: Session = Depends(get_db), admin: dict = Depends(require_role("ADMIN"))):
     camera = db.query(Camera).filter(Camera.id == id).first()
     if not camera:
         raise HTTPException(status_code=404, detail="Camera not found")
-        
+
     # Standard patch mapping
-    if "name" in payload: camera.name = payload["name"]
-    if "rtspUrl" in payload: camera.rtsp_url = payload["rtspUrl"]
-    if "lat" in payload: camera.latitude = payload["lat"]
-    if "lng" in payload: camera.longitude = payload["lng"]
-    if "bearing" in payload: camera.bearing = payload["bearing"]
-    if "fovAngle" in payload: camera.fov_angle = payload["fovAngle"]
-    if "range" in payload: camera.fov_radius = payload["range"]
-    if "zoneId" in payload: camera.zone_id = payload["zoneId"]
-    if "buildingId" in payload: camera.building_id = payload["buildingId"]
-    if "disabled" in payload: camera.is_active = not payload["disabled"]
+    changes = {}
+    if "name" in payload: changes["name"] = payload["name"]; camera.name = payload["name"]
+    if "rtspUrl" in payload: changes["rtspUrl"] = "***"; camera.rtsp_url = payload["rtspUrl"]
+    if "lat" in payload: changes["lat"] = payload["lat"]; camera.latitude = payload["lat"]
+    if "lng" in payload: changes["lng"] = payload["lng"]; camera.longitude = payload["lng"]
+    if "bearing" in payload: changes["bearing"] = payload["bearing"]; camera.bearing = payload["bearing"]
+    if "fovAngle" in payload: changes["fovAngle"] = payload["fovAngle"]; camera.fov_angle = payload["fovAngle"]
+    if "range" in payload: changes["range"] = payload["range"]; camera.fov_radius = payload["range"]
+    if "zoneId" in payload: changes["zoneId"] = payload["zoneId"]; camera.zone_id = payload["zoneId"]
+    if "buildingId" in payload: changes["buildingId"] = payload["buildingId"]; camera.building_id = payload["buildingId"]
+    if "disabled" in payload: changes["disabled"] = payload["disabled"]; camera.is_active = not payload["disabled"]
     if "targetFps" in payload:
         fps = max(MIN_TARGET_FPS, min(MAX_TARGET_FPS, int(payload["targetFps"])))
+        changes["targetFps"] = fps
         camera.target_fps = fps
         process_manager.set_fps(camera.id, fps)
 
+    if changes:
+        write_audit(db, admin["id"], "camera_patch", target_type="camera", target_id=id,
+                    detail=changes, source_ip=client_ip(request))
     db.commit()
     db.refresh(camera)
     return CameraResponse.model_validate(camera)
 
 @router.patch("/cameras", response_model=PaginatedResponse)
-def bulk_patch_camera_fps(payload: BulkCameraFpsUpdate, db: Session = Depends(get_db)):
+def bulk_patch_camera_fps(payload: BulkCameraFpsUpdate, request: Request, db: Session = Depends(get_db), admin: dict = Depends(require_role("ADMIN"))):
     """Bulk fps update — cameraIds is either an explicit list or the literal "all"."""
     fps = max(MIN_TARGET_FPS, min(MAX_TARGET_FPS, payload.target_fps))
 
@@ -105,21 +116,28 @@ def bulk_patch_camera_fps(payload: BulkCameraFpsUpdate, db: Session = Depends(ge
         camera.target_fps = fps
         process_manager.set_fps(camera.id, fps)
 
+    write_audit(db, admin["id"], "camera_bulk_patch_fps", target_type="camera",
+                detail={"cameraIds": payload.camera_ids, "targetFps": fps}, source_ip=client_ip(request))
     db.commit()
     items = [CameraResponse.model_validate(c) for c in cameras]
     return PaginatedResponse(items=items, next_cursor=None)
 
 @router.post("/cameras/{id}/retire", response_model=CameraResponse)
-def retire_camera(id: str, payload: dict, db: Session = Depends(get_db)):
+def retire_camera(id: str, payload: dict, request: Request, db: Session = Depends(get_db), admin: dict = Depends(require_role("ADMIN"))):
     camera = db.query(Camera).filter(Camera.id == id).first()
     if not camera:
         raise HTTPException(status_code=404, detail="Camera not found")
-        
+
+    reason = payload.get("reason", "Retired by user request")
     camera.retired = True
-    camera.retired_reason = payload.get("reason", "Retired by user request")
+    camera.retired_reason = reason
+    camera.retired_by = admin["username"]
+    camera.retired_at = datetime.utcnow()
     camera.status = "DISABLED"
     camera.is_active = False
-    
+
+    write_audit(db, admin["id"], "camera_retire", target_type="camera", target_id=id,
+                detail={"reason": reason}, source_ip=client_ip(request))
     db.commit()
     db.refresh(camera)
     return CameraResponse.model_validate(camera)

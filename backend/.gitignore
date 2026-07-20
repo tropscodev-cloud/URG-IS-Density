@@ -1,0 +1,15 @@
+# Secrets — never commit real credentials/keys
+.env
+*.env
+
+# Python
+__pycache__/
+*.pyc
+
+# Local dev database
+*.db
+*.db-shm
+*.db-wal
+
+# Local dev logs
+*.log

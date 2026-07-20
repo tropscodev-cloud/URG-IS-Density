@@ -47,14 +47,17 @@ class CrowdAnalyticsService:
         finally:
             db.close()
 
-    def process_entities(self, entities: List[dict]):
+    def process_entities(self, entities: List[dict]) -> bool:
         """
-        Processes live entity tracks to update zone headcounts.
-        Updates internal counters and periodically writes statistics to database.
+        Processes live entity tracks to update zone headcounts (fast, in-memory — safe to call
+        directly from the event loop). Returns True when a historical DB write is now due; the
+        caller is responsible for running write_historical_records() off the event loop (see
+        main.py's websocket_queue_reader) rather than this method doing it inline, so a SQLite
+        write-lock can't stall the fleet-wide WS broadcast.
         """
         # Reset current zone headcounts
         current_counts = {z.id: 0 for z in self.zones}
-        
+
         for entity in entities:
             coords = entity.get("coordinates")
             if not coords:
@@ -62,19 +65,22 @@ class CrowdAnalyticsService:
             lng, lat = coords.get("x"), coords.get("y")
             if lng is None or lat is None:
                 continue
-                
+
             # Check which zone(s) this coordinate falls in
             for zone in self.zones:
                 if point_in_polygon(lat, lng, zone.boundary_polygon):
                     current_counts[zone.id] += 1
-                    
+
         self.zone_headcounts = current_counts
-        
-        # Write historical aggregations to DB every 5 minutes
+
+        # Due for a historical write every 5 minutes — timestamp is updated here (not by the
+        # caller) so the 5-minute window stays correct regardless of how long the actual write
+        # takes to run on its executor thread.
         now = time.time()
         if now - self.last_db_write >= 300:
-            self.write_historical_records()
             self.last_db_write = now
+            return True
+        return False
 
     def write_historical_records(self):
         """Writes current zone headcount metrics to database."""

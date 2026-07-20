@@ -8,8 +8,10 @@ from sqlalchemy.orm import Session
 from core.database import get_db
 from models.orm import Camera, CameraHistory
 from models.domain import PaginatedResponse
+from api.routes.auth import get_current_user
 
-router = APIRouter()
+# Router-level dependency — see cameras.py for why this is enforced here rather than per-route.
+router = APIRouter(dependencies=[Depends(get_current_user)])
 
 # --- Alerts ---
 @router.get("/alerts", response_model=PaginatedResponse)

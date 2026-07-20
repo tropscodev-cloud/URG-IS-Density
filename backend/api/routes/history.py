@@ -5,8 +5,10 @@ from core.database import get_db
 from models.orm import CameraHistory, Camera
 from datetime import datetime
 from typing import Optional, List
+from api.routes.auth import get_current_user
 
-router = APIRouter()
+# Router-level dependency — see cameras.py for why this is enforced here rather than per-route.
+router = APIRouter(dependencies=[Depends(get_current_user)])
 
 def parse_iso_datetime(dt_str: str) -> datetime:
     try:

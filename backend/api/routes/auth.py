@@ -55,7 +55,7 @@ def login(payload: LoginRequest, response: Response):
         }
     else:
         raise HTTPException(
-            status_code=status.HTTP_418_IM_A_TEAPOT or status.HTTP_401_UNAUTHORIZED,
+            status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid username or password"
         )
 
@@ -76,8 +76,9 @@ def refresh():
     return {"status": "refreshed"}
 
 @router.post("/step-up")
-def step_up(payload: dict):
-    # Standard security validation
+def step_up(payload: dict, user = Depends(get_current_user)):
+    # Step-up re-auth strengthens an *existing* session — it must never itself be a way to
+    # establish one, or it's just a second, weaker login endpoint.
     if payload.get("password") == "urgis_admin":
         expire = datetime.utcnow() + timedelta(hours=1)
         return {"grantedUntil": expire.isoformat() + "Z"}

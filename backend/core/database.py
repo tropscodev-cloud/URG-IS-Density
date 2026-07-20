@@ -1,15 +1,28 @@
 # core/database.py
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, event
 from sqlalchemy.orm import declarative_base, sessionmaker
 from loguru import logger
 from .config import settings
+
+_is_sqlite = settings.DATABASE_URL.startswith("sqlite")
 
 engine = create_engine(
     settings.DATABASE_URL,
     pool_size=10,
     max_overflow=20,
-    pool_recycle=300
+    pool_recycle=300,
+    # SQLite only: wait up to 30s on a locked db file instead of failing immediately, and use
+    # WAL so readers (the API's own request handlers) don't block on writers (the camera worker
+    # processes' periodic history writes, each in a separate OS process from this one).
+    connect_args={"timeout": 30} if _is_sqlite else {},
 )
+
+if _is_sqlite:
+    @event.listens_for(engine, "connect")
+    def _set_sqlite_pragma(dbapi_connection, connection_record):
+        cursor = dbapi_connection.cursor()
+        cursor.execute("PRAGMA journal_mode=WAL")
+        cursor.close()
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()

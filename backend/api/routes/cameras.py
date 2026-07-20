@@ -11,8 +11,11 @@ from models.domain import (
 )
 from typing import List
 from workers.manager import process_manager
+from api.routes.auth import get_current_user
 
-router = APIRouter()
+# Router-level dependency — every route on this router requires a valid session by construction,
+# so a route added later can't accidentally ship unauthenticated.
+router = APIRouter(dependencies=[Depends(get_current_user)])
 
 MIN_TARGET_FPS = 1
 MAX_TARGET_FPS = 30

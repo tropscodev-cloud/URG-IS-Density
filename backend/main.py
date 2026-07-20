@@ -3,7 +3,8 @@ import asyncio
 import os
 import sys
 from datetime import datetime
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+import jwt
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Depends
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from loguru import logger
@@ -12,6 +13,7 @@ import uvicorn
 # Ensure the root path is configured
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 
+from core.config import settings
 from core.database import init_db
 from core.crowd_analytics import analytics_service
 from core.metrics_store import live_metrics
@@ -25,10 +27,12 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# CORS configuration
+# CORS configuration — explicit allowlist, required alongside allow_credentials=True. A wildcard
+# origin combined with credentials is a real misconfiguration to fix at the server, not something
+# to rely on the browser's own same-origin defenses to paper over.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[o.strip() for o in settings.CORS_ORIGINS.split(",") if o.strip()],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -63,8 +67,13 @@ async def websocket_queue_reader():
             video_time_s = payload.get("video_time_s")
             effective_fps = payload.get("effective_fps")
 
-            # Update the geofenced crowd analytics service with live coordinates
-            analytics_service.process_entities(entities)
+            # Update the geofenced crowd analytics service with live coordinates. The synchronous
+            # DB write this triggers every 5 minutes runs on the executor (mirroring the queue.get
+            # above), not inline — a SQLite write-lock blocking straight on the event loop would
+            # stall every other coroutine, including the fleet-wide broadcast below.
+            write_due = analytics_service.process_entities(entities)
+            if write_due:
+                await loop.run_in_executor(None, analytics_service.write_historical_records)
 
             # Format to the camera metrics JSON schema expected by the React frontend
             ts_str = datetime.utcnow().isoformat() + "Z"
@@ -154,6 +163,30 @@ async def shutdown_event():
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     """The multiplexed WebSocket endpoint supporting camera and global subscriptions."""
+    session_token = websocket.cookies.get("session_token")
+    authenticated = False
+    if session_token:
+        try:
+            jwt.decode(session_token, settings.JWT_SECRET, algorithms=[settings.JWT_ALGORITHM])
+            authenticated = True
+        except jwt.PyJWTError:
+            pass
+    if not authenticated:
+        # Closing with a specific code *before* accept() fails the opening handshake itself —
+        # compliant clients only ever observe an abrupt 1006 (no real WS close frame was ever
+        # sent), not the 1008 we're asking for here. Accept first, then close, so a real Close
+        # frame carrying 1008 actually reaches the client. The sleep(0) matters: uvicorn's
+        # websockets implementation batches accept-immediately-followed-by-close within the same
+        # event-loop tick into never completing the opening handshake at all (observed as a 403
+        # at the transport level, not a real 1008 close) — yielding once first lets it actually
+        # flush the 101 before the close frame goes out. This never touches ws_manager (no entry
+        # in its active_connections/last_sent dicts), so there's nothing to clean up afterward for
+        # a connection that was never really let in.
+        await websocket.accept()
+        await asyncio.sleep(0)
+        await websocket.close(code=1008)
+        return
+
     await ws_manager.connect(websocket)
     try:
         while True:
@@ -175,7 +208,7 @@ async def health():
     }
 
 @app.get("/api/v1/zones/state")
-async def get_zones_state():
+async def get_zones_state(_user = Depends(auth.get_current_user)):
     """Returns real-time headcounts and severity alerts for all geofenced zones."""
     return analytics_service.get_zone_metrics()
 
